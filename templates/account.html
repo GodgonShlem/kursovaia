@@ -1,1 +1,37 @@
 {% extends 'pattern.html' %}
+{% block main %}
+    {% if session['user_session'] %}
+        <div class="accountmenu-logged">
+            <p class="accountmenu-logged-greeting">Приветствуем</p>
+            <p class="accountmenu-logged-date">Дата регистрации аккаунта:</p>
+            <p class="accountmenu-logged-count">Вы прошли уроков</p> 
+            <a href="logout" class="accountmenu-logged-logout">Выйти из Аккаунта</a>
+        </div>
+    {% else %}
+        <div class="accountmenu-unlogged">
+            <p class="accountmenu-unlogged-title">Вы не авторизованны</p>
+                <span class="accountmenu-unlogged-err"></span>
+                <form method="post" class="accountmenu-unlogged-form hidden" id="form-reg">
+                    <p class="accountmenu-unlogged-form-title">Регистрация</p>
+                    <p style="font-size: 14px;" id="reg-elem"></p>
+                    <input type="text" name="username" required placeholder="Имя" class="accountmenu-unlogged-form-input">
+                    <input type="tel" name="phone" required placeholder="Телефон" class="accountmenu-unlogged-form-input">
+                    <input type="email" name="email" required placeholder="Почта" class="accountmenu-unlogged-form-input">
+                    <input type="password" name="password" required placeholder="Пароль" class="accountmenu-unlogged-form-input">
+                    <input type="password" name="password_confirm" required placeholder="Подтвердите пароль" class="accountmenu-unlogged-form-input">
+                    <button type="submit" name="register_submit" class="accountmenu-unlogged-form-button">Зарегистрироваться</button>
+                </form>
+                <form method="post" id="form-log" class="accountmenu-unlogged-form">
+                    <p class="accountmenu-unlogged-form-title">Вход</p>
+                    <p style="font-size: 14px;" id="log-elem"></p>
+                    <input type="email" name="email" required placeholder="Почта" class="accountmenu-unlogged-form-input">
+                    <input type="password" name="password" required placeholder="Пароль" class="accountmenu-unlogged-form-input">
+                    <button type="submit" name="register_submit" class="accountmenu-unlogged-form-button">Войти</button>
+                </form>
+            <div class="accountmenu-unlogged-btns">
+                <p id="btn-reg">Зарегистрироваться</p>
+                <p class="hidden" id="btn-log">Вход</p>
+            </div>
+        </div>
+    {% endif %}
+{% endblock %}

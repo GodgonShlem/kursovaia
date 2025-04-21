@@ -1,0 +1,72 @@
+@use 'variables';
+.accountmenu-logged {
+    width: 800px;
+    margin: 50px auto;
+    height: 350px;
+    display: flex;
+    flex-direction: column;
+    padding: 20px 30px;
+    background-color: variables.$MainColor;
+    border-radius: 30px;
+    position: relative;
+    font-size: 24px;
+    text-align: center;
+    .accountmenu-logged-logout {
+        margin-top: auto;
+        color: variables.$MainColorText;
+    }
+}
+.accountmenu-unlogged {
+    width: 400px;
+    margin: 50px auto;
+    height: 550px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background-color: variables.$MainColor;
+    border-radius: 30px;
+    position: relative;
+    .accountmenu-unlogged-title {
+        font-size: 18px;
+    }
+    .accountmenu-unlogged-btns {
+        position: absolute;
+        bottom: 0;
+        width: 300px;
+        display: flex;
+        justify-content: center;
+        &:hover{
+            cursor: pointer;
+        }
+    }
+    .accountmenu-unlogged-form {
+        width: 300px;
+        margin-bottom: 50px;
+        .accountmenu-unlogged-form-title {
+            font-size: 22px;
+        }
+        .accountmenu-unlogged-form-input {
+            width: 90%;
+            font-size: 18px;
+            height: 25px;
+            border: 1px solid variables.$MainColorDarker;
+            border-radius: 10px;
+            padding: 5px 10px;
+            margin: 10px auto;
+        }
+        .accountmenu-unlogged-form-button {
+            width: 75%;
+            height: 30px;
+            font-size: 18px;
+            border-radius: 10px;
+            margin: 10px auto;
+            background-color: variables.$MainColorDarker;
+            border: none;
+            &:hover {
+                background-color: variables.$MainColorDark;
+            }
+        }
+    }
+}
