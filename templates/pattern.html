@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PROGRAMMER</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Display:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <style>
+        * {
+            font-family: "Roboto", sans-serif;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+            <nav class="header-nav">
+                <div class="header-nav-company">
+                    <img src="../static/img/Programmer.svg" alt="">
+                     <p>PROGRAMMER</p> 
+                </div>
+                <div class="header-nav-pages">
+                    <a href="{{ url_for('index')}}" class="header-nav-pages-elem {{ 'header-nav-pages-elem_active' if active_page == 'home' else '' }}">Главная</a>
+                    <a href="{{ url_for('lessons')}}" class="header-nav-pages-elem {{ 'header-nav-pages-elem_active' if active_page == 'lessons' else '' }}">Уроки</a>
+                    <a href="{{ url_for('account')}}" class="header-nav-pages-elem {{ 'header-nav-pages-elem_active' if active_page == 'account' else '' }} ">Аккаунт</a>
+                </div>
+            </nav>
+    </header>
+    {% block main %}{% endblock %}
+    <footer class="footer">
+        <div class="footer-section">
+            <div class="footer-section-rights">
+                <div class="footer-section-rights-company">
+                   <img src="../static/img/Programmer.svg" alt="">
+                    <p>PROGRAMMER</p> 
+                </div>
+                <p>Наша компания не несёт никакой ответственности за
+                    эффективность обучения, корректности данных, а также различных ошибок с нашей стороны.
+                </p>
+                <p>Все права не защищены ©️</p>
+            </div>
+            <div class="footer-section-pages">
+                <p>Страницы</p>
+                <a href="{{ url_for('index')}}">Главная</a>
+                <a href="{{ url_for('account')}}">Аккаунт</a>
+                <a href="{{ url_for('lessons')}}">Уроки</a>
+            </div>
+            <div class="footer-section-cooperation">
+                <p>О компании</p>
+                <div class="footer-section-cooperation-media">
+                    <a href="https://vk.com/">
+                        <img src="../static/img/vk.svg" alt="">
+                    </a>
+                    <a href="https://www.instagram.com/">
+                        <img src="../static/img/instagram.svg" alt="">
+                    </a>
+                    <a href="https://www.facebook.com/">
+                        <img src="../static/img/facebook.svg" alt="">
+                    </a>
+                    <a href="https://www.youtube.com">
+                        <img src="../static/img/youtube.svg" alt="">
+                    </a>
+                </div>
+            </div>
+        </div>
+    </footer>
+</body>
+</html>

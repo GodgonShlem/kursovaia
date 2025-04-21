@@ -1,0 +1,169 @@
+@use 'variables';
+
+body {
+    margin: 0;
+}
+html {
+    background-color: variables.$MainBackground;
+}
+.header {
+    color: variables.$MainColorText;
+    margin: 0 20px;
+    a {
+        text-decoration: none;
+        color: variables.$MainColorText;
+    }
+    .header-nav {
+        display: flex;
+        background-color: variables.$MainColor;
+        border-radius: 40px;
+        max-width: 1800px;
+        margin: 20px auto;
+        position: relative;
+        .header-nav-company {
+            z-index: 1;
+            display: flex;
+            align-items: center;
+            margin-left: 50px;
+            img {
+                width: 34px;
+                border: 10%;
+            }
+            p {
+                font-size: 20px;
+                margin-left: 10px;
+            }
+        } 
+        .header-nav-pages {
+            z-index: 1;
+            width: 100%;
+            display: flex;
+            justify-content: right;
+            margin-right: 167px;
+            align-items: center;
+            gap: 45px;
+            border-radius: 20px;
+            .header-nav-pages-elem {
+                font-size: 20px;
+                padding: 5px 10px;
+                transition: .4s ease;
+                &:hover {
+                    color: variables.$MainColorTextHover;
+                }
+            }
+            .header-nav-pages-elem_active {
+                background-color: variables.$MainBackground;
+                border-radius: 20px;
+                &:hover {
+                    background-color: variables.$MainColorDark;
+                }
+            }
+        }
+        .header-nav-account {
+            display: flex;
+            align-items: center;
+            margin-right: 50px;
+            z-index: 2;
+            img {
+                width: 28px;
+                padding: 8px;
+                border-radius: 50%;
+                background-color: variables.$MainColorDarker;
+                &:hover {
+                background-color: variables.$MainColorTextHover;
+                }
+            }
+            
+        }
+        .header-nav-account_active {
+            img {
+                background-color: variables.$MainBackground;
+            }
+        }
+    } 
+} 
+
+.footer {
+    max-width: 1200px;
+    color: variables.$MainColorText;
+    display: flex;
+    justify-content: center;
+    margin: 0 auto;
+    padding: 0 20px;
+    a {
+        text-decoration: none;
+        color: variables.$MainColorText;
+    }
+    .footer-section {
+        width: 100% ;
+        display: flex;
+        justify-content: space-around;
+        border-radius: 0 0 50px 50px;
+        border-top: 1px solid variables.$MainColorText;
+        padding: 50px 30px;
+        .footer-section-rights {
+            max-width: 179px;
+            p {
+                font-size: 12px;
+                margin-top: 10px;
+                padding-left: 3px;
+            }
+            &-company {
+                display: flex;
+                align-items: center;
+                margin-bottom: 20px;
+                img {
+                    width: 34px;
+                }
+                p {
+                    font-size: 20px;
+                    margin: 0;
+                }
+            }
+        }
+        .footer-section-pages {
+            display: flex;
+            flex-direction: column;
+            p {
+                font-size: 20px;
+                margin: 0;
+                margin-bottom: 20px;
+            }
+            a {
+                font-size: 16px;
+                margin: 10px 0;
+                transition: 0.3s ease;
+                &:hover {
+                    color: rgb(132, 132, 132);
+                }
+            }
+        }
+        .footer-section-cooperation {
+            p {
+                font-size: 20px;
+                margin: 0;
+                margin-bottom: 36px;
+            }
+            &-media {
+                display: flex;
+                justify-content: center;
+                width: 80px;
+                flex-wrap: wrap;
+                gap: 16px;
+                margin: 10px auto;
+                text-decoration: none;
+                img {
+                    width: 28px;
+                    transition: 0.3s ease;
+                    &:hover {
+                        filter: invert(50%);
+                    }
+                }
+            }
+        }
+    }
+}
+
+.hidden {
+    display: none;
+}
