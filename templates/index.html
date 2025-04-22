@@ -1,1 +1,43 @@
 {% extends 'pattern.html' %}
+{% block main %}
+    <div class="hero-div">
+        <h1>Изучайте PHP с нуля до профессионала!</h1>
+        <p>Бесплатные, понятные и практичные уроки по PHP для всех уровней подготовки.</p>
+    </div>
+    <div class="benefits-div">
+        <h2>Почему стоит изучать PHP у нас?</h2>
+        <div class="benefit-container">
+            <div class="benefit-container-elem">
+                <div class="benefit">
+                    <img src="../static/img/man.svg" alt="Понятность">
+                    <h3>Понятность</h3>
+                    <p>Уроки написаны простым и доступным языком.</p>
+                </div>
+                <div class="benefit">
+                    <img src="../static/img/gears.svg" alt="Практичность"> 
+                    <h3>Практичность</h3>
+                    <p>Каждый урок содержит примеры кода и задания.</p>
+                </div>
+            </div>
+            <div class="benefit-container-elem">
+                <div class="benefit">
+                    <img src="../static/img/sharing.svg" alt="Бесплатность"> 
+                    <h3>Бесплатность</h3>
+                    <p>Все уроки доступны бесплатно.</p>
+                </div>
+                <div class="benefit">
+                    <img src="../static/img/support.svg" alt="Поддержка">
+                    <h3>Поддержка</h3>
+                    <p>Частое обновление учебных материалов.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="call-to-action-div">
+        <h2>Готовы начать свой путь в PHP?</h2>
+        <p>Присоединяйтесь к нашему сообществу и получите доступ к полному каталогу уроков, форуму для общения и эксклюзивным материалам.</p>
+        <div class="cta-buttons">
+            <a href="{{url_for('account')}}" class="register-button">Зарегистрироваться бесплатно</a>
+        </div>
+    </div>
+{% endblock %}
