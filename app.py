@@ -1,6 +1,6 @@
-from flask import Flask, render_template, request, session, jsonify
+from flask import Flask, render_template, request, session, jsonify, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
-from werkzeug.security import generate_password_hash
+from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 
 app = Flask(__name__)
@@ -64,6 +64,26 @@ def register():
         except Exception as err:
             db.session.rollback()
             return jsonify({'error': 'При регистрации возникла ошибка: ' + str(err)})
+
+@app.route('/login', methods=['POST'])
+def login():
+    if request.method == 'POST':
+        email = request.form['email']
+        password = request.form['password']
+        email_in_db = db.session.query(UsersDB).filter_by(email=email).first()
+        if email_in_db is not None and check_password_hash(email_in_db.password_hash, password):
+            session['user_session'] = email_in_db.username
+            session['user_status'] = email_in_db.status
+            return jsonify({'response': True, 'message':'Вход успешен'})
+        else:
+            return jsonify({'response': False, 'message':'Неправильный логин или пароль'})
+    else:
+        return 'Ошибка'
+
+@app.route('/logout')
+def logount():
+    session.clear()
+    return redirect(url_for('account'))
 
 with app.app_context():
     db.create_all()

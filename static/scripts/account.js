@@ -38,4 +38,25 @@ document.addEventListener('DOMContentLoaded', function() {
         })
         .catch(error => console.error('Ошибка:', error));
     });
+    $formLog.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+    
+        fetch('/login', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.response) {
+                document.getElementById('log-elem').textContent = data.message;
+                setTimeout(function() {
+                    window.location.href = 'account'; 
+                }, 1000); 
+            } else {
+                document.getElementById('log-elem').textContent = data.message;
+            }
+        })
+        .catch(error => console.error('Ошибка:', error));
+    });
 })
