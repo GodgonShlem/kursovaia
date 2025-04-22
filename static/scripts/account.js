@@ -16,4 +16,26 @@ document.addEventListener('DOMContentLoaded', function() {
         $btnReg.style.display = 'block'
         $btnLog.style.display = 'none'
     })
+    $formReg.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const formData = new FormData(this);
+    
+        fetch('/register', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.response) {
+                document.getElementById('reg-elem').textContent = 'Регистрация успешна';
+                setTimeout(function() {
+                    window.location.href = 'account'; 
+                }, 1000); 
+            } else if (data.error) {
+                document.getElementById('reg-elem').textContent = data.error;
+                $formReg.style.display = 'block'; 
+            }
+        })
+        .catch(error => console.error('Ошибка:', error));
+    });
 })
