@@ -13,6 +13,12 @@
             <textarea name="lesson-text" class="interactions-form-group-input" required></textarea>
         </div>
         <div class="interactions-form-group">
+            <label for="lesson-images" class="interactions-form-group-label">Изображения (можно несколько):</label>
+            <input type="file" name="lesson-images" id="lesson-images" multiple accept="image/*" onchange="previewImages()">
+            <p class="interactions-form-group-description">Выберите несколько изображений.  В тексте используйте теги [img:1], [img:2] и т.д. для вставки.</p>
+            <div id="image-preview" class="image-preview-container"></div>
+        </div>
+        <div class="interactions-form-group">
             <label for="lesson-questions" class="interactions-form-group-label">Вопрос урока:</label>
             <textarea name="lesson-questions" class="interactions-form-group-input"></textarea>
             <div class="interactions-form-questions">

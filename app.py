@@ -2,6 +2,9 @@ from flask import Flask, render_template, request, session, jsonify, redirect, u
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+import json
+import os
+from werkzeug.utils import secure_filename
 
 app = Flask(__name__)
 app.secret_key = 'QWERTYqwety123'
@@ -54,6 +57,53 @@ def lessons():
 @app.route('/lessoncreate', methods=['GET','POST'])
 def lessonsadmin():
     return render_template('lessoncreate.html', active_page='lessons')
+
+UPLOAD_FOLDER = 'static/uploads'
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
+
+@app.route('/create_lesson', methods=['GET', 'POST'])
+def createlesson():
+    if request.method == 'POST':
+        try:
+            lesson_title = request.form['lesson-title']
+            lesson_text = request.form['lesson-text']
+            lesson_questions = request.form.get('lesson-questions', '')
+            answer_texts = request.form.getlist('answer-text')
+            is_correct = request.form.getlist('is-correct')
+
+            if not lesson_questions or not answer_texts or not is_correct:
+                return jsonify({'response': False, 'message': 'Необходимо добавить вопрос и ответы'})
+            
+            images = request.files.getlist('lesson-images')
+            image_paths = []
+            if not os.path.exists(UPLOAD_FOLDER):
+                os.makedirs(UPLOAD_FOLDER)
+
+            for i, image in enumerate(images):
+                if image and allowed_file(image.filename):
+                    filename = secure_filename(image.filename)
+                    image_path = os.path.join(UPLOAD_FOLDER, f"{i}_{filename}") 
+                    image.save(image_path)
+                    image_paths.append(image_path)
+            
+            for index, path in enumerate(image_paths):
+                filename = os.path.basename(path) 
+                lesson_text = lesson_text.replace(f"[img:{index + 1}]", f"<img src='/static/uploads/{filename}'>")
+
+            new_lesson = Lessons(title=lesson_title, text=lesson_text)
+            db.session.add(new_lesson)
+            db.session.commit()
+            answer_texts_json = json.dumps(answer_texts)
+            is_correct_json = json.dumps(is_correct)
+            new_question = Questions(question=lesson_questions, answers=answer_texts_json, isCorrect=is_correct_json, lesson_id=new_lesson.id)
+            db.session.add(new_question)
+            db.session.commit()
+            return jsonify({'response': True})
+        except Exception as err:
+            db.session.rollback()
+            return jsonify({'error': str(err)})
 
 @app.route('/account', methods=['GET','POST'])
 def account():
