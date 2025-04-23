@@ -18,6 +18,30 @@ class UsersDB(db.Model):
     status = db.Column(db.String(15), default='user', nullable=False) 
     password_hash = db.Column(db.String(50), nullable=False)
     date = db.Column(db.DateTime(), default=datetime.now)
+    passed = db.relationship('UsersPassed', backref='username', lazy=True)
+
+class Lessons(db.Model):
+    __tablename__ = 'lessons'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    text = db.Column(db.Text, nullable=False)
+    questions = db.relationship('Questions', backref='lesson', lazy=True)
+    passed = db.relationship('UsersPassed', backref='lesson', lazy=True)
+
+class Questions(db.Model):
+    __tablename__ = 'questions'
+    id = db.Column(db.Integer, primary_key=True)
+    question = db.Column(db.String(300), nullable=False)
+    answers = db.Column(db.Text, nullable=False)
+    isCorrect = db.Column(db.Text, nullable=False)
+    lesson_id = db.Column(db.Integer, db.ForeignKey('lessons.id'), nullable=False)
+
+class UsersPassed(db.Model):
+    __tablename__ = 'userspassed'
+    id = db.Column(db.Integer, primary_key=True)
+    user = db.Column(db.ForeignKey('users.username'), nullable=False)
+    lesson_id = db.Column(db.ForeignKey('lessons.id'), nullable=False)
+    is_passed = db.Column(db.String(300), default = False,nullable=False)
 
 @app.route('/', methods=['GET','POST'])
 def index():
@@ -81,7 +105,7 @@ def login():
         return 'Ошибка'
 
 @app.route('/logout')
-def logount():
+def logout():
     session.clear()
     return redirect(url_for('account'))
 

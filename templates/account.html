@@ -5,12 +5,11 @@
             <p class="accountmenu-logged-greeting">Приветствуем</p>
             <p class="accountmenu-logged-date">Дата регистрации аккаунта:</p>
             <p class="accountmenu-logged-count">Вы прошли уроков</p> 
-            <a href="logout" class="accountmenu-logged-logout">Выйти из Аккаунта</a>
+            <a href="{{url_for('logout')}}" class="accountmenu-logged-logout">Выйти из Аккаунта</a>
         </div>
     {% else %}
         <div class="accountmenu-unlogged">
             <p class="accountmenu-unlogged-title">Вы не авторизованны</p>
-                <span class="accountmenu-unlogged-err"></span>
                 <form method="post" class="accountmenu-unlogged-form hidden" id="form-reg">
                     <p class="accountmenu-unlogged-form-title">Регистрация</p>
                     <p style="font-size: 14px;" id="reg-elem"></p>
