@@ -40,8 +40,8 @@ class UsersPassed(db.Model):
     __tablename__ = 'userspassed'
     id = db.Column(db.Integer, primary_key=True)
     user = db.Column(db.ForeignKey('users.username'), nullable=False)
-    lesson_id = db.Column(db.ForeignKey('lessons.id'), nullable=False)
     is_passed = db.Column(db.String(300), default = False,nullable=False)
+    lesson_id = db.Column(db.ForeignKey('lessons.id'), nullable=False)
 
 @app.route('/', methods=['GET','POST'])
 def index():
@@ -50,6 +50,10 @@ def index():
 @app.route('/lessons', methods=['GET','POST'])
 def lessons():
     return render_template('lessons.html', active_page='lessons')
+
+@app.route('/lessoncreate', methods=['GET','POST'])
+def lessonsadmin():
+    return render_template('lessoncreate.html', active_page='lessons')
 
 @app.route('/account', methods=['GET','POST'])
 def account():

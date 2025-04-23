@@ -1,0 +1,79 @@
+@use 'variables';
+.interactions {
+    width: 60%;
+    margin: 60px auto;
+    padding: 0 20px;
+    .interactions-form {
+        .interactions-form-group:nth-of-type(2) .interactions-form-group-input {
+            height: 550px; 
+        }
+        .interactions-form-title {
+            font-size: 34px;
+        }
+        .interactions-form-message {
+            font-size: 20px;
+            margin-bottom: 0;
+            text-align: center;
+        }
+        .interactions-form-group {
+            display: flex;
+            flex-direction: column;
+            .interactions-form-group-label {
+                font-size: 24px;
+                font-weight: bold;
+                margin: 30px 0 10px 0;
+            }
+            .interactions-form-group-input {
+                border: 1px solid rgba(255, 255, 255, 0.2);
+                box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.197);
+                height: 60px;
+                resize: none;
+                font-size: 22px;
+                padding: 10px 5px;
+                &:focus {
+                    outline: none;
+                }
+            }
+        }
+        .interactions-form-questions{
+            .interactions-form-questions-elem{
+                display: flex;
+                align-items: center;
+                .interactions-form-questions-elem-input{
+                    padding: 4px 8px;
+                    font-size: 18px;
+                    margin: 10px 0;
+                    width: 500px;
+                    resize: none;
+                }
+                .interactions-form-questions-elem-check{
+                    width: 30px;
+                    height: 30px;
+                    margin-right: 20px;
+                }
+            }
+            .interactions-form-questions-btns {
+                width: fit-content;
+                padding: 5px;
+                font-size: 16px;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+        }
+        .interactions-form-group-btns {
+            display: flex;
+            flex-direction: row;
+            justify-content: space-between;
+            margin: 40px 0;
+            
+            .interactions-form-group-btns-btn {
+                display: block;
+                width: 200px;
+                font-size: 18px;
+                height: 40px;
+                border-radius: 5px;
+                cursor: pointer;
+            }
+        }
+    }
+}
