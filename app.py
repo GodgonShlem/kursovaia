@@ -106,6 +106,18 @@ def createlesson():
             db.session.rollback()
             return jsonify({'error': str(err)})
 
+@app.route('/delete_lesson/<int:lesson_id>', methods=['DELETE'])
+def deletelesson(lesson_id):
+    lesson = Lessons.query.get(lesson_id)
+    if lesson:
+        Questions.query.filter_by(lesson_id=lesson_id).delete()
+        UsersPassed.query.filter_by(lesson_id=lesson_id).delete()
+        db.session.delete(lesson)
+        db.session.commit()
+        return ''
+    else:
+        return 'Урок не найден'
+
 @app.route('/account', methods=['GET','POST'])
 def account():
     return render_template('account.html', active_page='account')

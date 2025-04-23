@@ -57,7 +57,7 @@
                     <td class="interactions-edit-table-str-id">{{ lesson.id }}</td>
                     <td class="interactions-edit-table-str-lesson">{{ lesson.title }}</td>
                     <td class="interactions-edit-table-str-edit"><a href=""> <img src="../static/img/pencil-edit.svg" alt="" class="interactions-edit-pencil"></a></td>
-                    <td class="interactions-edit-table-str-btn"><button type="button"><img src="../static/img/x-symbol.svg" alt="" class="interactions-edit-xsymbol"></button></td>
+                    <td class="interactions-edit-table-str-btn"><button onclick="deleteLesson('{{lesson.id}}')"><img src="../static/img/x-symbol.svg" alt="" class="interactions-edit-xsymbol"></button></td>
                 </tr>
             {% endfor %}
         </table>

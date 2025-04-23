@@ -64,3 +64,19 @@ interactionsBtnSubmit.addEventListener('click', function(event) {
         document.getElementById('interactions-message').textContent = 'Произошла ошибка: ' + error.message;
     })
 });
+
+function deleteLesson(lessonId) {
+    if (confirm('Вы уверены, что хотите удалить этот урок?')) {
+        fetch(`/delete_lesson/${lessonId}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (response.ok) {
+                document.getElementById(`interactions-edit-table-str${lessonId}`).remove(); 
+            } else {
+                alert('Ошибка при удалении урока');
+            }
+        })
+        .catch(error => console.error('Ошибка:', error));
+    }
+}
