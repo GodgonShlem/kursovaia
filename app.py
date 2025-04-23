@@ -56,7 +56,8 @@ def lessons():
 
 @app.route('/lessoncreate', methods=['GET','POST'])
 def lessonsadmin():
-    return render_template('lessoncreate.html', active_page='lessons')
+    lessons = Lessons.query.all() 
+    return render_template('lessoncreate.html', lessons=lessons, active_page='lessons')
 
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}

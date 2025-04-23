@@ -402,3 +402,43 @@ html {
   border-radius: 5px;
   cursor: pointer;
 }
+.interactions .interactions-edit {
+  border-top: 1px solid black;
+}
+.interactions .interactions-edit .interactions-delete-text {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+}
+.interactions .interactions-edit .interactions-edit-xsymbol {
+  width: 14px;
+  margin: 0 5px;
+}
+.interactions .interactions-edit .interactions-edit-pencil {
+  width: 28px;
+  margin: 0 5px;
+}
+.interactions .interactions-edit .interactions-edit-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+.interactions .interactions-edit .interactions-edit-table .interactions-edit-table-str .interactions-edit-table-str-title {
+  font-weight: bold;
+  padding: 5px;
+  background: #efefef;
+  border: 1px solid black;
+}
+.interactions .interactions-edit .interactions-edit-table .interactions-edit-table-str td {
+  border: 1px solid black;
+  padding: 5px;
+}
+.interactions .interactions-edit .interactions-edit-table .interactions-edit-table-str td:nth-of-type(3), .interactions .interactions-edit .interactions-edit-table .interactions-edit-table-str td:nth-of-type(4) {
+  text-align: center;
+}
+.interactions .interactions-edit .interactions-edit-table .interactions-edit-table-str .interactions-edit-table-str-btn button {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background-color: rgb(250, 250, 250);
+  cursor: pointer;
+}
