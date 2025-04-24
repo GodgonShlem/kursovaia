@@ -128,6 +128,50 @@ def lessonedit(lesson_id):
         question.isCorrect_load = json.loads(question.isCorrect)
     return render_template('lessonedit.html', active_page='lessons', lesson=lesson, question=questions, lessons=lessons)
 
+@app.route('/edit_lesson/<int:lesson_id>', methods=['GET', 'POST'])
+def editlesson(lesson_id):
+    if request.method == 'POST':
+        try:
+            lesson = Lessons.query.get(lesson_id)
+            if not lesson:
+                return jsonify({'error': 'Урок не найден.'})
+
+            lesson_questions = request.form['lesson-questions']
+            answer_texts = request.form.getlist('answer-text')
+            is_correct = request.form.getlist('is-correct')
+            images = request.files.getlist('lesson-images')
+            image_paths = []
+            if not lesson_questions or not answer_texts or not is_correct:
+                return jsonify({'response': False, 'message': 'Необходимо добавить вопрос и ответы'})
+            if not os.path.exists(UPLOAD_FOLDER):
+                os.makedirs(UPLOAD_FOLDER)
+
+            for i, image in enumerate(images):
+                if image and allowed_file(image.filename):
+                    filename = secure_filename(image.filename)
+                    image_path = os.path.join(UPLOAD_FOLDER, f"{i}_{filename}") 
+                    image.save(image_path)
+                    image_paths.append(image_path)
+            lesson_text = request.form['lesson-text']
+            for index, path in enumerate(image_paths):
+                filename = os.path.basename(path) 
+                lesson_text = lesson_text.replace(f"[img:{index + 1}]", f"<img src='/static/uploads/{filename}'>")
+
+            lesson.title = request.form['lesson-title']
+            lesson.text = lesson_text
+            db.session.commit()
+
+            question = Questions.query.filter_by(lesson_id=lesson_id).first()
+            question.question = lesson_questions
+            question.answers = json.dumps(answer_texts)
+            question.isCorrect = json.dumps(is_correct)
+            db.session.commit()
+            return jsonify({'response': True})
+
+        except Exception as err:
+            db.session.rollback()
+            return jsonify({'error': str(err)})
+
 @app.route('/account', methods=['GET','POST'])
 def account():
     return render_template('account.html', active_page='account')
