@@ -1,0 +1,71 @@
+@use 'variables';
+.lessons {
+    width: 700px;
+    margin: 50px auto;
+    .lessons-link {
+        text-decoration: none;
+        color: variables.$MainColorText;
+        width: fit-content;
+        height: 40px;
+        padding: 5px 10px;
+        border-radius: 20px;
+        background-color: variables.$MainColor;
+        border: none;
+        font-size: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        &:hover {
+            background-color: variables.$MainColorDarker;
+        }
+    }
+    .lessons-list {
+        .lessons-list-elem {
+            font-size: 24px;
+            margin: 30px;
+            a {
+                text-decoration: none;
+                color: variables.$MainColorText;
+                transition: .3s ease;
+                &:hover {
+                    color: variables.$MainColorTextHover;
+                }
+            }
+        }
+    }
+}
+.account-unlogged {
+    position: relative;
+    .account-unlogged-message {
+        width: 375px;
+        height: 150px;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        background-color: variables.$MainColor;
+        transform: translate(-50%, -50%);
+        border-radius: 25px;
+        z-index: 3;
+        text-align: center;
+        padding-top: 20px;
+        font-size: 24px;
+        .account-unlogged-message-title {
+            font-size: 18px;
+        }
+        .account-unlogged-message-text {
+            font-size: 24px;
+            color: variables.$MainColorText;
+            text-decoration: none;
+            border-bottom: 1px solid variables.$MainColorText;
+            transition: .2s ease;
+            &:hover {
+                color: variables.$MainColorTextHover;
+                border-bottom: 1px solid variables.$MainColorTextHover;
+            }
+        }
+    }
+    .account-unlogged-lessons {
+        filter: blur(5px);
+    }
+}

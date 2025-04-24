@@ -1,4 +1,41 @@
 {% extends 'pattern.html' %}
 {% block main %}
-<a href="lessoncreate">Создать урок</a>
+{% if session['user_session'] %}
+        <div class="lessons">
+            <a href="lessoncreate" class="lessons-link">Изменения уроков</a>
+            <ol class="lessons-list">
+                {% for lesson in lessons %}
+                        <li class="lessons-list-elem"><a href="">{{ lesson.title }}</a>
+                {% endfor %}
+            </ol>
+        </div>
+    {% else %}
+        <div class="account-unlogged">
+            <div class="account-unlogged-message">
+                <p class="account-unlogged-message-title">Вы не авторизованны</p>
+                <a href="account" class="account-unlogged-message-text">Войдите в аккаунт чтобы увидеть</a>
+            </div>
+            <div class="lessons account-unlogged-lessons">
+                <ol class="lessons-list">
+                    <li class="lessons-list-elem"><a>Lorem ipsum dolor sit amet consectetur adipisicing elit.</a></li>
+                    <li class="lessons-list-elem"><a>Adipisicing ipsum dolor sit amet consectetur adipisicing elit.</a></li>
+                    <li class="lessons-list-elem"><a>Ipsum dolor sit amet consectetur adipisicing elit.</a></li>
+                    <li class="lessons-list-elem"><a>Dolor sit amet consectetur adipisicing elit.</a></li>
+                    <li class="lessons-list-elem"><a>Lorem ipsum dolor sit amet consectetur adipisicing elit.</a></li>
+                    <li class="lessons-list-elem"><a>Sum dolor sit amet co Loremectetur adipisicing elit.</a></li>
+                    <li class="lessons-list-elem"><a>Lorem ipsum dolor sitGermnamet consectetur adipisicing elit.</a></li>
+                    <li class="lessons-list-elem"><a>Germnarem ipsum dolor sit amet consectetur adipisicing elit.</a></li>
+                    <li class="lessons-list-elem"><a>Moreaom ipsum dolor sit amet consectetur adipisicing elit.</a></li>
+                    <li class="lessons-list-elem"><a>Gorem ipsum dolor Moreait ameasft consectetur adipisicing.</a></li>
+                    <li class="lessons-list-elem"><a>SoreMforeaas ipsMoream dolor sit asdamet consesdctetur.</a></li>
+                    <li class="lessons-list-elem"><a>Rorem ipsum dolor sit fasamet consectfgdaetur adipisivcxzcing.</a></li>
+                    <li class="lessons-list-elem"><a>Oorem ipsum xvxvdolor sit aadmet consectetur adipisicing.</a></li>
+                    <li class="lessons-list-elem"><a>ZoGermnam ipvsum dovxlor sfait amet convxsectetur elit.</a></li>
+                    <li class="lessons-list-elem"><a>Frem ipsum dolvxor sit amet Moreaonsectetur adipisicing elit.</a></li>
+                    <li class="lessons-list-elem"><a>Shs ipsum dolxvxor vsit amet consecvxtetur adipicvsicing helit.</a></li>
+                    <li class="lessons-list-elem"><a>Pohd ipsum dolor sit amet consecxctetur adicxpisicing sdaelit.</a></li>
+                </ol>
+            </div>
+        </div>
+    {% endif %}
 {% endblock %}

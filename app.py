@@ -52,7 +52,12 @@ def index():
 
 @app.route('/lessons', methods=['GET','POST'])
 def lessons():
-    return render_template('lessons.html', active_page='lessons')
+    user_session = session.get('user_session')
+    if user_session:
+        lessonsDB = Lessons.query.all()
+        return render_template('lessons.html', active_page='lessons', lessons=lessonsDB)
+    else:
+        return render_template('lessons.html', active_page='lessons')
 
 @app.route('/lessoncreate', methods=['GET','POST'])
 def lessonsadmin():
