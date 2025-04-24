@@ -118,6 +118,16 @@ def deletelesson(lesson_id):
     else:
         return 'Урок не найден'
 
+@app.route('/lessonedit/<int:lesson_id>', methods=['GET','POST'])
+def lessonedit(lesson_id):
+    lesson = Lessons.query.get_or_404(lesson_id) 
+    lessons = Lessons.query.all()
+    questions = Questions.query.filter_by(lesson_id=lesson_id).all()
+    for question in questions:
+        question.answer_load = json.loads(question.answers)
+        question.isCorrect_load = json.loads(question.isCorrect)
+    return render_template('lessonedit.html', active_page='lessons', lesson=lesson, question=questions, lessons=lessons)
+
 @app.route('/account', methods=['GET','POST'])
 def account():
     return render_template('account.html', active_page='account')
