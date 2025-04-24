@@ -1,0 +1,66 @@
+{% extends 'pattern.html' %}
+{% block main %}
+    <div class="interactions">
+        <form method="post" class="interactions-form" enctype="multipart/form-data">
+            <h1 class="interactions-form-title">Редактирование урока</h1>
+            <p class="interactions-form-message" id="interactions-message"></p>
+            <div class="interactions-form-group">
+                <label for="lesson-title" class="interactions-form-group-label">Название урока:</label>
+                <textarea name="lesson-title" class="interactions-form-group-input" required>{{ lesson.title }}</textarea>  
+            </div>
+            <div class="interactions-form-group">
+                <label for="lesson-text" class="interactions-form-group-label">Текст урока:</label>
+                <textarea name="lesson-text" class="interactions-form-group-input" required>{{ lesson.text }}</textarea>
+            </div>
+            <div class="interactions-form-group">
+                <label for="lesson-images" class="interactions-form-group-label">Изображения (можно несколько):</label>
+                <input type="file" name="lesson-images" id="lesson-images" multiple accept="image/*" onchange="previewImages()">
+                <p class="interactions-form-group-description">Выберите несколько изображений.  В тексте используйте теги [img:1], [img:2] и т.д. для вставки.</p>
+                <div id="image-preview" class="image-preview-container"></div>
+            </div>
+            <div class="interactions-form-group">
+                <label for="lesson-questions" class="interactions-form-group-label">Вопрос урока:</label>
+                <textarea name="lesson-questions" class="interactions-form-group-input">{% for question in question %}{{ question.question }}{% endfor %}</textarea>
+                <div class="interactions-form-questions">
+                    <p class="interactions-form-questions-title">Варианты ответов</p>
+                    <p class="interactions-form-questions-title">Поставьте галочку у верных ответов</p>
+                    <div class="interactions-form-questions-options" id="answer-options">
+                        {% for question in question %}
+                            {% for answer in question.answer_load %}
+                            <div class="interactions-form-questions-elem">
+                                <input type="checkbox" name="is-correct" class="interactions-form-questions-elem-check" value="{{  loop.index|string }}" {% if loop.index|string in question.isCorrect_load %}checked{% endif %}>
+                                <textarea type="text" name="answer-text" class="interactions-form-questions-elem-input" value="{{ answer }}">{{ answer }}</textarea><br>
+                            </div>
+                            {% endfor %}
+                        {% endfor %}
+                    </div>
+                    <button type="button" id="add-answer" onclick="addAnswer()">Добавить вариант</button>
+                    <button type="button" onclick="removeAnswer()">Удалить вариант</button>
+                </div>
+            </div>
+            <div class="interactions-form-group-btns">
+                <button type="submit" class="interactions-form-group-btns-btn" id="editor-btn-submit">Сохранить</button>
+            </div>
+        </form>
+        <div class="interactions-edit">
+            <h2 class="interactions-delete-title">Удаление и изменение урока</h2>
+            <p class="interactions-delete-text">Нажмите <img src="../static/img/x-symbol.svg" alt="" class="interactions-edit-xsymbol"> чтобы удалить и <img src="../static/img/pencil-edit.svg" alt="" class="interactions-edit-pencil"> чтобы отредактировать</p>
+            <table class="interactions-edit-table">
+                    <tr class="interactions-edit-table-str">
+                        <td class="interactions-edit-table-str-title">id</td>
+                        <td class="interactions-edit-table-str-title">Название</td>
+                        <td class="interactions-edit-table-str-title" colspan="2">Изменения</td>
+                    </tr>
+                {% for lesson in lessons%}
+                    <tr class="interactions-edit-table-str" id="interactions-edit-table-str{{lesson.id}}">
+                        <td class="interactions-edit-table-str-id">{{ lesson.id }}</td>
+                        <td class="interactions-edit-table-str-lesson">{{ lesson.title }}</td>
+                        <td class="interactions-edit-table-str-edit"><a href="{{url_for('lessonedit', lesson_id=lesson.id)}}"> <img src="../static/img/pencil-edit.svg" alt="" class="interactions-edit-pencil"></a></td>
+                        <td class="interactions-edit-table-str-btn"><button onclick="deleteLesson('{{lesson.id}}')"><img src="../static/img/x-symbol.svg" alt="" class="interactions-edit-xsymbol"></button></td>
+                    </tr>
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+    <script src="../static/scripts/editor.js"></script>
+{% endblock %}
