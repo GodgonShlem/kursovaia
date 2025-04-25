@@ -243,6 +243,30 @@ def login():
     else:
         return 'Ошибка'
 
+@app.route('/test_verify/<int:lesson_id>', methods=['GET', 'POST'])
+def testverify(lesson_id):
+    if request.method == 'POST':
+        user_answers = request.form.getlist('test-checkbox')
+        if len(user_answers) == 0:
+            return jsonify({'response': False, 'message': 'Выберите ответы'})
+        questions = Questions.query.filter_by(lesson_id=lesson_id).all()
+        for question in questions:
+            question = json.loads(question.isCorrect)
+        if user_answers == question:
+            try:
+                alreadyPassed = UsersPassed.query.filter_by(user=session['user_session'], lesson_id=lesson_id, is_passed = True).first()
+                if alreadyPassed:
+                    return jsonify({'response': True, 'message': 'Всё верно'})
+                passed = UsersPassed(user=session['user_session'], lesson_id=lesson_id, is_passed = True)
+                db.session.add(passed)
+                db.session.commit()
+                return jsonify({'response': True, 'message': 'Всё верно, тест засчитан'})
+            except Exception as err:
+                db.session.rollback()
+                return jsonify({'error': str(err)})
+        else:
+            return jsonify({'response': False, 'message': 'Неверно'})
+
 @app.route('/logout')
 def logout():
     session.clear()

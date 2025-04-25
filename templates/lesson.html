@@ -19,12 +19,13 @@
                             </li>
                         {% endfor %}
                         </ul>
-                        <button type="button" class="lesson-test-form-button">Ответить</button>
+                        <button type="button" class="lesson-test-form-button" id="{{lesson.id}}">Ответить</button>
                     </form>
                 {% endif %}
             </div>
             {% endfor %}
         </div>
+        <script src="../static/scripts/lesson.js"></script>
     {% else %}
         <script> window.location.href = "{{ url_for('index')}}"</script>
     {% endif %}
