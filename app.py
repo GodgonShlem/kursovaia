@@ -67,10 +67,13 @@ def lesson(lesson_id):
         for question in questions:
             question.answer_load = json.loads(question.answers)
             question.isCorrect_load = json.loads(question.isCorrect)
-            return render_template('lesson.html', lesson=current_lesson, questions=questions,active_page='lessons')
-        else:
-            return redirect(url_for('lessons'))
-    return render_template('lessons.html', active_page='lessons')
+        next_lesson = lesson_id+1
+        last_lesson = Lessons.query.order_by(Lessons.id.desc()).first()
+        if next_lesson>last_lesson.id:
+            next_lesson = False
+        return render_template('lesson.html', lesson=current_lesson, questions=questions,active_page='lessons', next_lesson=next_lesson)
+    else:
+        return redirect(url_for('lessons'))
 
 @app.route('/lessoncreate', methods=['GET','POST'])
 def lessonsadmin():

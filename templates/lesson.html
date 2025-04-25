@@ -20,6 +20,24 @@
                         {% endfor %}
                         </ul>
                         <button type="button" class="lesson-test-form-button" id="{{lesson.id}}">Ответить</button>
+                        <div class="lesson-test-form-nextlesson">
+                            {% if next_lesson %}
+                                <div class="lesson-test-form-nextlesson-container">
+                                    <a href="{{ url_for('lessons')}}" class="lesson-href"><img src="../static/img/arrow-right.svg" alt=""></a>
+                                    <p class="lesson-test-form-nextlesson-title">К урокам</p>
+                                </div>
+                                <div class="lesson-test-form-nextlesson-container">
+                                    <p class="lesson-test-form-nextlesson-title">Перейти к следующему уроку</p>
+                                    <a href="{{ url_for('lesson', lesson_id=next_lesson)}}" class="lesson-test-form-nextlesson-btn"><img src="../static/img/arrow-right.svg" alt=""></a>
+                                    </div>
+                            {% else %}
+                                <div class="lesson-test-form-nextlesson-container">
+                                    <a href="{{ url_for('lessons')}}" class="lesson-href"><img src="../static/img/arrow-right.svg" alt=""></a>
+                                    <p class="lesson-test-form-nextlesson-title">К урокам</p>
+                                </div>
+                                <p class="lesson-test-form-nextlesson-title">Больше нет уроков</p>
+                            {% endif %}
+                        </div>
                     </form>
                 {% endif %}
             </div>

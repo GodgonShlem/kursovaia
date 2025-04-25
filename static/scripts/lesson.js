@@ -1,4 +1,5 @@
 const testBtn = document.querySelector('.lesson-test-form-button');
+const nextLessonDiv = document.querySelector('.lesson-test-form-nextlesson');
 testBtn.addEventListener('click', (event)=>{
     event.preventDefault()
     const lesson_id = testBtn.id;
@@ -20,6 +21,7 @@ testBtn.addEventListener('click', (event)=>{
     .then(data => {
         if (data.response) {
             document.getElementById('test-message').textContent = data.message;
+            nextLessonDiv.style.height = 'fit-content'
         } else {
             document.getElementById('test-message').textContent = data.message;
         }
