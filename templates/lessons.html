@@ -5,7 +5,7 @@
             <a href="lessoncreate" class="lessons-link">Изменения уроков</a>
             <ol class="lessons-list">
                 {% for lesson in lessons %}
-                        <li class="lessons-list-elem"><a href="">{{ lesson.title }}</a>
+                        <li class="lessons-list-elem"><a href="{{ url_for('lesson', lesson_id=lesson.id) }}">{{ lesson.title }}</a>
                 {% endfor %}
             </ol>
         </div>

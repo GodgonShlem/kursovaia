@@ -59,6 +59,19 @@ def lessons():
     else:
         return render_template('lessons.html', active_page='lessons')
 
+@app.route('/lesson/<int:lesson_id>' , methods=['GET','POST'])
+def lesson(lesson_id):
+    current_lesson = Lessons.query.get_or_404(lesson_id) 
+    if current_lesson:
+        questions = Questions.query.filter_by(lesson_id=lesson_id).all()
+        for question in questions:
+            question.answer_load = json.loads(question.answers)
+            question.isCorrect_load = json.loads(question.isCorrect)
+            return render_template('lesson.html', lesson=current_lesson, questions=questions,active_page='lessons')
+        else:
+            return redirect(url_for('lessons'))
+    return render_template('lessons.html', active_page='lessons')
+
 @app.route('/lessoncreate', methods=['GET','POST'])
 def lessonsadmin():
     lessons = Lessons.query.all() 

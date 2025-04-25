@@ -478,9 +478,6 @@ html {
 .lessons .lessons-list .lessons-list-elem a:hover {
   color: rgba(0, 0, 0, 0.5);
 }
-.lessons .lessons-list .lessons-list-elem_block {
-  color: rgba(0, 0, 0, 0.5);
-}
 
 .account-unlogged {
   position: relative;
@@ -515,4 +512,84 @@ html {
 }
 .account-unlogged .account-unlogged-lessons {
   filter: blur(5px);
+}
+
+.lesson {
+  max-width: 1200px;
+  margin: 50px auto;
+  padding: 0 20px;
+}
+.lesson .lesson-href {
+  text-decoration: none;
+  color: black;
+  width: 80px;
+  height: 40px;
+  border-radius: 20px;
+  background-color: #e6daa6;
+  border: none;
+  font-size: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.lesson .lesson-href:hover {
+  background-color: #d3c99a;
+}
+.lesson .lesson-href img {
+  width: 32px;
+  rotate: 180deg;
+}
+.lesson .lesson-title {
+  font-size: 34px;
+}
+.lesson .lesson-text {
+  font-size: 24px;
+  white-space: pre-wrap;
+}
+.lesson .lesson-text img {
+  max-width: 80%;
+  display: flex;
+  margin: 20px auto -10px auto;
+}
+.lesson .lesson-test .lesson-test-question {
+  font-size: 28px;
+}
+.lesson .lesson-test .lesson-test-message {
+  font-size: 30px;
+}
+.lesson .lesson-test .lesson-test-form .lesson-test-form-ul {
+  padding: 0;
+  max-width: -moz-fit-content;
+  max-width: fit-content;
+}
+.lesson .lesson-test .lesson-test-form .lesson-test-form-ul .lesson-test-form-ul-li {
+  display: flex;
+  align-items: center;
+}
+.lesson .lesson-test .lesson-test-form .lesson-test-form-ul .lesson-test-form-ul-answer {
+  font-size: 24px;
+  max-width: 500px;
+  white-space: pre-wrap;
+}
+.lesson .lesson-test .lesson-test-form .lesson-test-form-ul .lesson-test-form-ul-checkbox {
+  width: 30px;
+  height: 30px;
+  margin-right: 30px;
+}
+.lesson .lesson-test .lesson-test-form .lesson-test-form-button {
+  margin: 20px 0;
+  width: 250px;
+  height: 45px;
+  font-size: 22px;
+  border: none;
+  border-radius: 5px;
+  background-color: #e6daa6;
+}
+.lesson .lesson-test .lesson-test-form .lesson-test-form-button:hover {
+  background-color: #d3c99a;
+}
+
+.hidden {
+  display: none;
 }
