@@ -1,10 +1,13 @@
 from flask import Flask, render_template, request, session, jsonify, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import os
 from werkzeug.utils import secure_filename
+import uuid 
+from functools import wraps  
+from sqlalchemy import func
 
 app = Flask(__name__)
 app.secret_key = 'QWERTYqwety123'
@@ -21,6 +24,7 @@ class UsersDB(db.Model):
     status = db.Column(db.String(15), default='user', nullable=False) 
     password_hash = db.Column(db.String(50), nullable=False)
     date = db.Column(db.DateTime(), default=datetime.now)
+    token = db.Column(db.String(100), unique=True, nullable=True) 
     passed = db.relationship('UsersPassed', backref='username', lazy=True)
 
 class Lessons(db.Model):
@@ -46,11 +50,39 @@ class UsersPassed(db.Model):
     is_passed = db.Column(db.String(300), default = False,nullable=False)
     lesson_id = db.Column(db.ForeignKey('lessons.id'), nullable=False)
 
+TOKEN_NAME = 'token'
+COOKIE_DURATION = 30
+
+def checkToken(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        token = request.cookies.get(TOKEN_NAME)
+        if token:
+            user = UsersDB.query.filter_by(token=token).first()
+            if user:
+                session['user_session'] = user.username
+                session['user_status'] = user.status
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.before_request
+def before_request():
+    if 'user_session' not in session:
+        token = request.cookies.get(TOKEN_NAME)
+        if token:
+            user = UsersDB.query.filter_by(token=token).first()
+            if user:
+                session['user_session'] = user.username
+                session['user_status'] = user.status
+
+
 @app.route('/', methods=['GET','POST'])
+@checkToken
 def index():
     return render_template('index.html', active_page='home')
 
 @app.route('/lessons', methods=['GET','POST'])
+@checkToken
 def lessons():
     user_session = session.get('user_session')
     if user_session:
@@ -71,6 +103,7 @@ def lessons():
         return render_template('lessons.html', active_page='lessons')
 
 @app.route('/lesson/<int:lesson_id>' , methods=['GET','POST'])
+@checkToken
 def lesson(lesson_id):
     current_lesson = Lessons.query.get_or_404(lesson_id) 
     if current_lesson:
@@ -87,7 +120,7 @@ def lesson(lesson_id):
         lessonsDB = Lessons.query.all()
         passed_lesson = UsersPassed.query.filter_by(user=session['user_session']).all()
         available_lessons = set()
-        
+
         for passed in passed_lesson:
             if passed.is_passed:
                 available_lessons.add(passed.lesson_id)
@@ -105,6 +138,7 @@ def lesson(lesson_id):
         return redirect(url_for('lessons'))
 
 @app.route('/lessoncreate', methods=['GET','POST'])
+@checkToken
 def lessonsadmin():
     lessons = Lessons.query.all() 
     return render_template('lessoncreate.html', lessons=lessons, active_page='lessons')
@@ -115,6 +149,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/create_lesson', methods=['GET', 'POST'])
+@checkToken
 def createlesson():
     if request.method == 'POST':
         try:
@@ -157,6 +192,7 @@ def createlesson():
             return jsonify({'error': str(err)})
 
 @app.route('/delete_lesson/<int:lesson_id>', methods=['DELETE'])
+@checkToken
 def deletelesson(lesson_id):
     lesson = Lessons.query.get(lesson_id)
     if lesson:
@@ -169,6 +205,7 @@ def deletelesson(lesson_id):
         return 'Урок не найден'
 
 @app.route('/lessonedit/<int:lesson_id>', methods=['GET','POST'])
+@checkToken
 def lessonedit(lesson_id):
     lesson = Lessons.query.get_or_404(lesson_id) 
     lessons = Lessons.query.all()
@@ -179,6 +216,7 @@ def lessonedit(lesson_id):
     return render_template('lessonedit.html', active_page='lessons', lesson=lesson, question=questions, lessons=lessons)
 
 @app.route('/edit_lesson/<int:lesson_id>', methods=['GET', 'POST'])
+@checkToken
 def editlesson(lesson_id):
     if request.method == 'POST':
         try:
@@ -223,12 +261,13 @@ def editlesson(lesson_id):
             return jsonify({'error': str(err)})
 
 @app.route('/account', methods=['GET','POST'])
+@checkToken
 def account():
     if 'user_session' not in session:
         return render_template('account.html', active_page='account')
     user = UsersDB.query.filter_by(username=session['user_session']).first()
-    lessons_count = Lessons.query.distinct(Lessons.id).count()
-    passed_lessons_count = UsersPassed.query.filter_by(user=session['user_session']).distinct(UsersPassed.lesson_id).count()
+    lessons_count = db.session.query(func.count(Lessons.id.distinct())).scalar()
+    passed_lessons_count = db.session.query(func.count(UsersPassed.lesson_id.distinct())).filter(UsersPassed.user == session['user_session']).scalar()
     return render_template('account.html', active_page='account', user=user, lessons_count=lessons_count, passed_lessons_count=passed_lessons_count)
 
 @app.route('/register', methods=['POST'])
@@ -271,16 +310,25 @@ def login():
         email = request.form['email']
         password = request.form['password']
         email_in_db = db.session.query(UsersDB).filter_by(email=email).first()
+
         if email_in_db is not None and check_password_hash(email_in_db.password_hash, password):
             session['user_session'] = email_in_db.username
             session['user_status'] = email_in_db.status
-            return jsonify({'response': True, 'message':'Вход успешен'})
+
+            response = jsonify({'response': True, 'message':'Вход успешен'})
+            token = str(uuid.uuid4())
+            email_in_db.token = token
+            db.session.commit()
+            expires = datetime.now() + timedelta(days=COOKIE_DURATION)
+            response.set_cookie(TOKEN_NAME, token, expires=expires, httponly=True, samesite='Lax') 
+            return response
         else:
             return jsonify({'response': False, 'message':'Неправильный логин или пароль'})
     else:
         return 'Ошибка'
 
 @app.route('/test_verify/<int:lesson_id>', methods=['GET', 'POST'])
+@checkToken
 def testverify(lesson_id):
     if request.method == 'POST':
         user_answers = request.form.getlist('test-checkbox')
@@ -305,9 +353,19 @@ def testverify(lesson_id):
             return jsonify({'response': False, 'message': 'Неверно'})
 
 @app.route('/logout')
+@checkToken
 def logout():
+    username = session.get('user_session')
+    if username:
+        user = UsersDB.query.filter_by(username=username).first()
+        if user and user.token:
+            user.token = None 
+            db.session.commit()
+
     session.clear()
-    return redirect(url_for('account'))
+    response = redirect(url_for('account'))
+    response.delete_cookie(TOKEN_NAME) 
+    return response
 
 with app.app_context():
     db.create_all()
