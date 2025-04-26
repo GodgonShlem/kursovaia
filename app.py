@@ -224,7 +224,12 @@ def editlesson(lesson_id):
 
 @app.route('/account', methods=['GET','POST'])
 def account():
-    return render_template('account.html', active_page='account')
+    if 'user_session' not in session:
+        return render_template('account.html', active_page='account')
+    user = UsersDB.query.filter_by(username=session['user_session']).first()
+    lessons_count = Lessons.query.distinct(Lessons.id).count()
+    passed_lessons_count = UsersPassed.query.filter_by(user=session['user_session']).distinct(UsersPassed.lesson_id).count()
+    return render_template('account.html', active_page='account', user=user, lessons_count=lessons_count, passed_lessons_count=passed_lessons_count)
 
 @app.route('/register', methods=['POST'])
 def register():

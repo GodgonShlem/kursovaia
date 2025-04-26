@@ -2,9 +2,9 @@
 {% block main %}
     {% if session['user_session'] %}
         <div class="accountmenu-logged">
-            <p class="accountmenu-logged-greeting">Приветствуем</p>
-            <p class="accountmenu-logged-date">Дата регистрации аккаунта:</p>
-            <p class="accountmenu-logged-count">Вы прошли уроков</p> 
+            <p class="accountmenu-logged-greeting">Приветствуем, {{ user.username }}</p>
+            <p class="accountmenu-logged-date">Дата регистрации аккаунта: {{ user.date.strftime('%Y-%m-%d %H:%M:%S') if user.date else 'No date' }}</p>
+            <p class="accountmenu-logged-count">Вы прошли {{passed_lessons_count}} из {{lessons_count}} уроков</p> 
             <a href="{{url_for('logout')}}" class="accountmenu-logged-logout">Выйти из Аккаунта</a>
         </div>
     {% else %}
