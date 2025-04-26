@@ -2,7 +2,9 @@
 {% block main %}
 {% if session['user_session'] %}
         <div class="lessons">
-            <a href="lessoncreate" class="lessons-link">Изменения уроков</a>
+            {% if session['user_status'] == 'admin' %}
+                <a href="lessoncreate" class="lessons-link">Изменения уроков</a>
+            {% endif %}
             <ol class="lessons-list">
                 {% for lesson in lessons %}
                     {% if lesson.id in passed_lessons %}

@@ -143,6 +143,18 @@ def lessonsadmin():
     lessons = Lessons.query.all() 
     return render_template('lessoncreate.html', lessons=lessons, active_page='lessons')
 
+@app.route('/get_admin', methods=['GET','POST'])
+@checkToken
+def getadmin():
+    if session['user_session']:
+        user = UsersDB.query.filter_by(username=session['user_session']).first()
+        user.status = 'admin'
+        db.session.commit()
+        session['user_status'] = 'admin'
+        return redirect(url_for('account'))
+    else: 
+        return render_template('index.html', active_page='home')
+
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 def allowed_file(filename):
