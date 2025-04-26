@@ -5,7 +5,14 @@
             <a href="lessoncreate" class="lessons-link">Изменения уроков</a>
             <ol class="lessons-list">
                 {% for lesson in lessons %}
+                    {% if lesson.id in passed_lessons %}
                         <li class="lessons-list-elem"><a href="{{ url_for('lesson', lesson_id=lesson.id) }}">{{ lesson.title }}</a>
+                        {% if lesson.id in its_next_lesson %}<input type="checkbox" disabled>
+                        {% else %} <input type="checkbox" checked disabled>
+                        {% endif %}</li>
+                    {% else %}
+                        <li class="lessons-list-elem lessons-list-elem_block">{{ lesson.title }}</li>
+                    {% endif %}
                 {% endfor %}
             </ol>
         </div>

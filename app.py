@@ -55,7 +55,18 @@ def lessons():
     user_session = session.get('user_session')
     if user_session:
         lessonsDB = Lessons.query.all()
-        return render_template('lessons.html', active_page='lessons', lessons=lessonsDB)
+        passed_lesson = UsersPassed.query.filter_by(user=session['user_session']).all()
+        passed_lessons = set()
+        for passed in passed_lesson:
+            if passed.is_passed:
+                passed_lessons.add(passed.lesson_id)
+        its_next_lesson = set()
+        for lesson in lessonsDB:
+            if lesson.id not in passed_lessons:
+                passed_lessons.add(lesson.id)
+                its_next_lesson.add(lesson.id)
+                break 
+        return render_template('lessons.html', active_page='lessons', lessons=lessonsDB,passed_lessons=passed_lessons, its_next_lesson=its_next_lesson)
     else:
         return render_template('lessons.html', active_page='lessons')
 
@@ -67,11 +78,29 @@ def lesson(lesson_id):
         for question in questions:
             question.answer_load = json.loads(question.answers)
             question.isCorrect_load = json.loads(question.isCorrect)
+
         next_lesson = lesson_id+1
         last_lesson = Lessons.query.order_by(Lessons.id.desc()).first()
         if next_lesson>last_lesson.id:
             next_lesson = False
-        return render_template('lesson.html', lesson=current_lesson, questions=questions,active_page='lessons', next_lesson=next_lesson)
+
+        lessonsDB = Lessons.query.all()
+        passed_lesson = UsersPassed.query.filter_by(user=session['user_session']).all()
+        available_lessons = set()
+        
+        for passed in passed_lesson:
+            if passed.is_passed:
+                available_lessons.add(passed.lesson_id)
+    
+        for lesson in lessonsDB:
+            if lesson.id not in available_lessons:
+                available_lessons.add(lesson.id)
+                break
+
+        if lesson_id in available_lessons:
+            return render_template('lesson.html', lesson=current_lesson, questions=questions,active_page='lessons', next_lesson=next_lesson, available_lessons=available_lessons)
+        else:
+            return redirect(url_for('lessons'))
     else:
         return redirect(url_for('lessons'))
 

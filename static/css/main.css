@@ -478,6 +478,14 @@ html {
 .lessons .lessons-list .lessons-list-elem a:hover {
   color: rgba(0, 0, 0, 0.5);
 }
+.lessons .lessons-list .lessons-list-elem input {
+  width: 20px;
+  height: 20px;
+  margin-left: 10px;
+}
+.lessons .lessons-list .lessons-list-elem_block {
+  color: rgba(0, 0, 0, 0.5);
+}
 
 .account-unlogged {
   position: relative;
