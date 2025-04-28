@@ -178,7 +178,7 @@ def createlesson():
             image_paths = []
             if not os.path.exists(UPLOAD_FOLDER):
                 os.makedirs(UPLOAD_FOLDER)
-
+            total = len(images)
             for i, image in enumerate(images):
                 if image and allowed_file(image.filename):
                     filename = secure_filename(image.filename)
@@ -186,9 +186,11 @@ def createlesson():
                     image.save(image_path)
                     image_paths.append(image_path)
             
+            total = len(images)
             for index, path in enumerate(image_paths):
                 filename = os.path.basename(path) 
-                lesson_text = lesson_text.replace(f"[img:{index + 1}]", f"<img src='/static/uploads/{filename}'>")
+                lesson_text = lesson_text.replace(f"[img:{total}]", f"<img src='/static/uploads/{filename}'>")
+                total-=1
 
             new_lesson = Lessons(title=lesson_title, text=lesson_text)
             db.session.add(new_lesson)
@@ -253,9 +255,11 @@ def editlesson(lesson_id):
                     image.save(image_path)
                     image_paths.append(image_path)
             lesson_text = request.form['lesson-text']
+            total = len(images)
             for index, path in enumerate(image_paths):
                 filename = os.path.basename(path) 
-                lesson_text = lesson_text.replace(f"[img:{index + 1}]", f"<img src='/static/uploads/{filename}'>")
+                lesson_text = lesson_text.replace(f"[img:{total}]", f"<img src='/static/uploads/{filename}'>")
+                total-=1
 
             lesson.title = request.form['lesson-title']
             lesson.text = lesson_text

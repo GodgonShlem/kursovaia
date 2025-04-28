@@ -558,7 +558,8 @@ html {
 .lesson .lesson-text img {
   max-width: 80%;
   display: flex;
-  margin: 20px auto -10px auto;
+  margin: 20px auto -10px 0;
+  justify-content: left;
 }
 .lesson .lesson-test .lesson-test-question {
   font-size: 28px;
