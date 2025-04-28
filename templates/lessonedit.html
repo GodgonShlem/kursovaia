@@ -1,5 +1,6 @@
 {% extends 'pattern.html' %}
 {% block main %}
+{% if session['user_status'] == 'admin' %}
     <div class="interactions">
         <form method="post" class="interactions-form" enctype="multipart/form-data">
             <h1 class="interactions-form-title">Редактирование урока</h1>
@@ -39,7 +40,7 @@
                 </div>
             </div>
             <div class="interactions-form-group-btns">
-                <button type="submit" class="interactions-form-group-btns-btn" id="editor-btn-submit">Сохранить</button>
+                <button type="submit" class="interactions-form-group-btns-btn" id="editor-btn-submit" onclick="editorSubmit('{{lesson.id}}', event)">Сохранить</button>
             </div>
         </form>
         <div class="interactions-edit">
@@ -63,4 +64,7 @@
         </div>
     </div>
     <script src="../static/scripts/editor.js"></script>
+{% else %}
+    <script> window.location.href = "{{ url_for('index')}}"</script>
+{% endif %}
 {% endblock %}

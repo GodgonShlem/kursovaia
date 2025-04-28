@@ -442,3 +442,202 @@ html {
   background-color: rgb(250, 250, 250);
   cursor: pointer;
 }
+
+.lessons {
+  width: 700px;
+  margin: 50px auto;
+}
+.lessons .lessons-link {
+  text-decoration: none;
+  color: black;
+  width: -moz-fit-content;
+  width: fit-content;
+  height: 40px;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background-color: #e6daa6;
+  border: none;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.lessons .lessons-link:hover {
+  background-color: #d3c99a;
+}
+.lessons .lessons-list .lessons-list-elem {
+  font-size: 24px;
+  margin: 30px;
+}
+.lessons .lessons-list .lessons-list-elem a {
+  text-decoration: none;
+  color: black;
+  transition: 0.3s ease;
+}
+.lessons .lessons-list .lessons-list-elem a:hover {
+  color: rgba(0, 0, 0, 0.5);
+}
+.lessons .lessons-list .lessons-list-elem input {
+  width: 20px;
+  height: 20px;
+  margin-left: 10px;
+}
+.lessons .lessons-list .lessons-list-elem_block {
+  color: rgba(0, 0, 0, 0.5);
+}
+
+.account-unlogged {
+  position: relative;
+}
+.account-unlogged .account-unlogged-message {
+  width: 375px;
+  height: 150px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background-color: #e6daa6;
+  transform: translate(-50%, -50%);
+  border-radius: 25px;
+  z-index: 3;
+  text-align: center;
+  padding-top: 20px;
+  font-size: 24px;
+}
+.account-unlogged .account-unlogged-message .account-unlogged-message-title {
+  font-size: 18px;
+}
+.account-unlogged .account-unlogged-message .account-unlogged-message-text {
+  font-size: 24px;
+  color: black;
+  text-decoration: none;
+  border-bottom: 1px solid black;
+  transition: 0.2s ease;
+}
+.account-unlogged .account-unlogged-message .account-unlogged-message-text:hover {
+  color: rgba(0, 0, 0, 0.5);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
+}
+.account-unlogged .account-unlogged-lessons {
+  filter: blur(5px);
+}
+
+.lesson {
+  max-width: 1200px;
+  margin: 50px auto;
+  padding: 0 20px;
+}
+.lesson .lesson-href {
+  text-decoration: none;
+  color: black;
+  width: 80px;
+  height: 40px;
+  border-radius: 20px;
+  background-color: #e6daa6;
+  border: none;
+  font-size: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.lesson .lesson-href:hover {
+  background-color: #d3c99a;
+}
+.lesson .lesson-href img {
+  width: 32px;
+  rotate: 180deg;
+}
+.lesson .lesson-title {
+  font-size: 34px;
+}
+.lesson .lesson-text {
+  font-size: 24px;
+  white-space: pre-wrap;
+}
+.lesson .lesson-text img {
+  max-width: 80%;
+  display: flex;
+  margin: 20px auto -10px 0;
+  justify-content: left;
+}
+.lesson .lesson-test .lesson-test-question {
+  font-size: 28px;
+}
+.lesson .lesson-test .lesson-test-message {
+  font-size: 30px;
+}
+.lesson .lesson-test .lesson-test-form .lesson-test-form-ul {
+  padding: 0;
+  max-width: -moz-fit-content;
+  max-width: fit-content;
+}
+.lesson .lesson-test .lesson-test-form .lesson-test-form-ul .lesson-test-form-ul-li {
+  display: flex;
+  align-items: center;
+}
+.lesson .lesson-test .lesson-test-form .lesson-test-form-ul .lesson-test-form-ul-answer {
+  font-size: 24px;
+  max-width: 500px;
+  white-space: pre-wrap;
+}
+.lesson .lesson-test .lesson-test-form .lesson-test-form-ul .lesson-test-form-ul-checkbox {
+  width: 30px;
+  height: 30px;
+  margin-right: 30px;
+}
+.lesson .lesson-test .lesson-test-form .lesson-test-form-button {
+  margin: 20px 0;
+  width: 250px;
+  height: 45px;
+  font-size: 22px;
+  border: none;
+  border-radius: 5px;
+  background-color: #e6daa6;
+}
+.lesson .lesson-test .lesson-test-form .lesson-test-form-button:hover {
+  background-color: #d3c99a;
+}
+.lesson .lesson-test .lesson-test-form .lesson-test-form-nextlesson {
+  height: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.lesson .lesson-test .lesson-test-form .lesson-test-form-nextlesson .lesson-test-form-nextlesson-container {
+  display: flex;
+  flex: 1;
+  align-items: center;
+}
+.lesson .lesson-test .lesson-test-form .lesson-test-form-nextlesson .lesson-test-form-nextlesson-container:last-child {
+  justify-content: right;
+}
+.lesson .lesson-test .lesson-test-form .lesson-test-form-nextlesson .lesson-test-form-nextlesson-title {
+  font-size: 22px;
+  margin: 0 10px;
+}
+.lesson .lesson-test .lesson-test-form .lesson-test-form-nextlesson .lesson-test-form-nextlesson-btn {
+  text-decoration: none;
+  color: black;
+  width: 80px;
+  height: 40px;
+  border-radius: 20px;
+  background-color: #e6daa6;
+  border: none;
+  font-size: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+}
+.lesson .lesson-test .lesson-test-form .lesson-test-form-nextlesson .lesson-test-form-nextlesson-btn:hover {
+  background-color: #d3c99a;
+}
+.lesson .lesson-test .lesson-test-form .lesson-test-form-nextlesson .lesson-test-form-nextlesson-btn img {
+  width: 32px;
+}
+
+.hidden {
+  display: none;
+}

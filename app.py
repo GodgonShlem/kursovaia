@@ -1,10 +1,13 @@
 from flask import Flask, render_template, request, session, jsonify, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
 from werkzeug.security import generate_password_hash, check_password_hash
-from datetime import datetime
+from datetime import datetime, timedelta
 import json
 import os
 from werkzeug.utils import secure_filename
+import uuid 
+from functools import wraps  
+from sqlalchemy import func
 
 app = Flask(__name__)
 app.secret_key = 'QWERTYqwety123'
@@ -21,6 +24,7 @@ class UsersDB(db.Model):
     status = db.Column(db.String(15), default='user', nullable=False) 
     password_hash = db.Column(db.String(50), nullable=False)
     date = db.Column(db.DateTime(), default=datetime.now)
+    token = db.Column(db.String(100), unique=True, nullable=True) 
     passed = db.relationship('UsersPassed', backref='username', lazy=True)
 
 class Lessons(db.Model):
@@ -46,18 +50,110 @@ class UsersPassed(db.Model):
     is_passed = db.Column(db.String(300), default = False,nullable=False)
     lesson_id = db.Column(db.ForeignKey('lessons.id'), nullable=False)
 
+TOKEN_NAME = 'token'
+COOKIE_DURATION = 30
+
+def checkToken(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        token = request.cookies.get(TOKEN_NAME)
+        if token:
+            user = UsersDB.query.filter_by(token=token).first()
+            if user:
+                session['user_session'] = user.username
+                session['user_status'] = user.status
+        return f(*args, **kwargs)
+    return decorated_function
+
+@app.before_request
+def before_request():
+    if 'user_session' not in session:
+        token = request.cookies.get(TOKEN_NAME)
+        if token:
+            user = UsersDB.query.filter_by(token=token).first()
+            if user:
+                session['user_session'] = user.username
+                session['user_status'] = user.status
+
+
 @app.route('/', methods=['GET','POST'])
+@checkToken
 def index():
     return render_template('index.html', active_page='home')
 
 @app.route('/lessons', methods=['GET','POST'])
+@checkToken
 def lessons():
-    return render_template('lessons.html', active_page='lessons')
+    user_session = session.get('user_session')
+    if user_session:
+        lessonsDB = Lessons.query.all()
+        passed_lesson = UsersPassed.query.filter_by(user=session['user_session']).all()
+        passed_lessons = set()
+        for passed in passed_lesson:
+            if passed.is_passed:
+                passed_lessons.add(passed.lesson_id)
+        its_next_lesson = set()
+        for lesson in lessonsDB:
+            if lesson.id not in passed_lessons:
+                passed_lessons.add(lesson.id)
+                its_next_lesson.add(lesson.id)
+                break 
+        return render_template('lessons.html', active_page='lessons', lessons=lessonsDB,passed_lessons=passed_lessons, its_next_lesson=its_next_lesson)
+    else:
+        return render_template('lessons.html', active_page='lessons')
+
+@app.route('/lesson/<int:lesson_id>' , methods=['GET','POST'])
+@checkToken
+def lesson(lesson_id):
+    current_lesson = Lessons.query.get_or_404(lesson_id) 
+    if current_lesson:
+        questions = Questions.query.filter_by(lesson_id=lesson_id).all()
+        for question in questions:
+            question.answer_load = json.loads(question.answers)
+            question.isCorrect_load = json.loads(question.isCorrect)
+
+        next_lesson = lesson_id+1
+        last_lesson = Lessons.query.order_by(Lessons.id.desc()).first()
+        if next_lesson>last_lesson.id:
+            next_lesson = False
+
+        lessonsDB = Lessons.query.all()
+        passed_lesson = UsersPassed.query.filter_by(user=session['user_session']).all()
+        available_lessons = set()
+
+        for passed in passed_lesson:
+            if passed.is_passed:
+                available_lessons.add(passed.lesson_id)
+    
+        for lesson in lessonsDB:
+            if lesson.id not in available_lessons:
+                available_lessons.add(lesson.id)
+                break
+
+        if lesson_id in available_lessons:
+            return render_template('lesson.html', lesson=current_lesson, questions=questions,active_page='lessons', next_lesson=next_lesson, available_lessons=available_lessons)
+        else:
+            return redirect(url_for('lessons'))
+    else:
+        return redirect(url_for('lessons'))
 
 @app.route('/lessoncreate', methods=['GET','POST'])
+@checkToken
 def lessonsadmin():
     lessons = Lessons.query.all() 
     return render_template('lessoncreate.html', lessons=lessons, active_page='lessons')
+
+@app.route('/get_admin', methods=['GET','POST'])
+@checkToken
+def getadmin():
+    if session['user_session']:
+        user = UsersDB.query.filter_by(username=session['user_session']).first()
+        user.status = 'admin'
+        db.session.commit()
+        session['user_status'] = 'admin'
+        return redirect(url_for('account'))
+    else: 
+        return render_template('index.html', active_page='home')
 
 UPLOAD_FOLDER = 'static/uploads'
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -65,6 +161,7 @@ def allowed_file(filename):
     return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 @app.route('/create_lesson', methods=['GET', 'POST'])
+@checkToken
 def createlesson():
     if request.method == 'POST':
         try:
@@ -81,7 +178,7 @@ def createlesson():
             image_paths = []
             if not os.path.exists(UPLOAD_FOLDER):
                 os.makedirs(UPLOAD_FOLDER)
-
+            total = len(images)
             for i, image in enumerate(images):
                 if image and allowed_file(image.filename):
                     filename = secure_filename(image.filename)
@@ -89,9 +186,11 @@ def createlesson():
                     image.save(image_path)
                     image_paths.append(image_path)
             
+            total = len(images)
             for index, path in enumerate(image_paths):
                 filename = os.path.basename(path) 
-                lesson_text = lesson_text.replace(f"[img:{index + 1}]", f"<img src='/static/uploads/{filename}'>")
+                lesson_text = lesson_text.replace(f"[img:{total}]", f"<img src='/static/uploads/{filename}'>")
+                total-=1
 
             new_lesson = Lessons(title=lesson_title, text=lesson_text)
             db.session.add(new_lesson)
@@ -107,6 +206,7 @@ def createlesson():
             return jsonify({'error': str(err)})
 
 @app.route('/delete_lesson/<int:lesson_id>', methods=['DELETE'])
+@checkToken
 def deletelesson(lesson_id):
     lesson = Lessons.query.get(lesson_id)
     if lesson:
@@ -119,6 +219,7 @@ def deletelesson(lesson_id):
         return 'Урок не найден'
 
 @app.route('/lessonedit/<int:lesson_id>', methods=['GET','POST'])
+@checkToken
 def lessonedit(lesson_id):
     lesson = Lessons.query.get_or_404(lesson_id) 
     lessons = Lessons.query.all()
@@ -128,9 +229,62 @@ def lessonedit(lesson_id):
         question.isCorrect_load = json.loads(question.isCorrect)
     return render_template('lessonedit.html', active_page='lessons', lesson=lesson, question=questions, lessons=lessons)
 
+@app.route('/edit_lesson/<int:lesson_id>', methods=['GET', 'POST'])
+@checkToken
+def editlesson(lesson_id):
+    if request.method == 'POST':
+        try:
+            lesson = Lessons.query.get(lesson_id)
+            if not lesson:
+                return jsonify({'error': 'Урок не найден.'})
+
+            lesson_questions = request.form['lesson-questions']
+            answer_texts = request.form.getlist('answer-text')
+            is_correct = request.form.getlist('is-correct')
+            images = request.files.getlist('lesson-images')
+            image_paths = []
+            if not lesson_questions or not answer_texts or not is_correct:
+                return jsonify({'response': False, 'message': 'Необходимо добавить вопрос и ответы'})
+            if not os.path.exists(UPLOAD_FOLDER):
+                os.makedirs(UPLOAD_FOLDER)
+
+            for i, image in enumerate(images):
+                if image and allowed_file(image.filename):
+                    filename = secure_filename(image.filename)
+                    image_path = os.path.join(UPLOAD_FOLDER, f"{i}_{filename}") 
+                    image.save(image_path)
+                    image_paths.append(image_path)
+            lesson_text = request.form['lesson-text']
+            total = len(images)
+            for index, path in enumerate(image_paths):
+                filename = os.path.basename(path) 
+                lesson_text = lesson_text.replace(f"[img:{total}]", f"<img src='/static/uploads/{filename}'>")
+                total-=1
+
+            lesson.title = request.form['lesson-title']
+            lesson.text = lesson_text
+            db.session.commit()
+
+            question = Questions.query.filter_by(lesson_id=lesson_id).first()
+            question.question = lesson_questions
+            question.answers = json.dumps(answer_texts)
+            question.isCorrect = json.dumps(is_correct)
+            db.session.commit()
+            return jsonify({'response': True})
+
+        except Exception as err:
+            db.session.rollback()
+            return jsonify({'error': str(err)})
+
 @app.route('/account', methods=['GET','POST'])
+@checkToken
 def account():
-    return render_template('account.html', active_page='account')
+    if 'user_session' not in session:
+        return render_template('account.html', active_page='account')
+    user = UsersDB.query.filter_by(username=session['user_session']).first()
+    lessons_count = db.session.query(func.count(Lessons.id.distinct())).scalar()
+    passed_lessons_count = db.session.query(func.count(UsersPassed.lesson_id.distinct())).filter(UsersPassed.user == session['user_session']).scalar()
+    return render_template('account.html', active_page='account', user=user, lessons_count=lessons_count, passed_lessons_count=passed_lessons_count)
 
 @app.route('/register', methods=['POST'])
 def register():
@@ -172,19 +326,62 @@ def login():
         email = request.form['email']
         password = request.form['password']
         email_in_db = db.session.query(UsersDB).filter_by(email=email).first()
+
         if email_in_db is not None and check_password_hash(email_in_db.password_hash, password):
             session['user_session'] = email_in_db.username
             session['user_status'] = email_in_db.status
-            return jsonify({'response': True, 'message':'Вход успешен'})
+
+            response = jsonify({'response': True, 'message':'Вход успешен'})
+            token = str(uuid.uuid4())
+            email_in_db.token = token
+            db.session.commit()
+            expires = datetime.now() + timedelta(days=COOKIE_DURATION)
+            response.set_cookie(TOKEN_NAME, token, expires=expires, httponly=True, samesite='Lax') 
+            return response
         else:
             return jsonify({'response': False, 'message':'Неправильный логин или пароль'})
     else:
         return 'Ошибка'
 
+@app.route('/test_verify/<int:lesson_id>', methods=['GET', 'POST'])
+@checkToken
+def testverify(lesson_id):
+    if request.method == 'POST':
+        user_answers = request.form.getlist('test-checkbox')
+        if len(user_answers) == 0:
+            return jsonify({'response': False, 'message': 'Выберите ответы'})
+        questions = Questions.query.filter_by(lesson_id=lesson_id).all()
+        for question in questions:
+            question = json.loads(question.isCorrect)
+        if user_answers == question:
+            try:
+                alreadyPassed = UsersPassed.query.filter_by(user=session['user_session'], lesson_id=lesson_id, is_passed = True).first()
+                if alreadyPassed:
+                    return jsonify({'response': True, 'message': 'Всё верно'})
+                passed = UsersPassed(user=session['user_session'], lesson_id=lesson_id, is_passed = True)
+                db.session.add(passed)
+                db.session.commit()
+                return jsonify({'response': True, 'message': 'Всё верно, тест засчитан'})
+            except Exception as err:
+                db.session.rollback()
+                return jsonify({'error': str(err)})
+        else:
+            return jsonify({'response': False, 'message': 'Неверно'})
+
 @app.route('/logout')
+@checkToken
 def logout():
+    username = session.get('user_session')
+    if username:
+        user = UsersDB.query.filter_by(username=username).first()
+        if user and user.token:
+            user.token = None 
+            db.session.commit()
+
     session.clear()
-    return redirect(url_for('account'))
+    response = redirect(url_for('account'))
+    response.delete_cookie(TOKEN_NAME) 
+    return response
 
 with app.app_context():
     db.create_all()
