@@ -5,18 +5,26 @@
             {% if session['user_status'] == 'admin' %}
                 <a href="lessoncreate" class="lessons-link">Изменения уроков</a>
             {% endif %}
-            <ol class="lessons-list">
-                {% for lesson in lessons %}
-                    {% if lesson.id in passed_lessons %}
-                        <li class="lessons-list-elem"><a href="{{ url_for('lesson', lesson_id=lesson.id) }}">{{ lesson.title }}</a>
-                        {% if lesson.id in its_next_lesson %}<input type="checkbox" disabled>
-                        {% else %} <input type="checkbox" checked disabled>
-                        {% endif %}</li>
-                    {% else %}
-                        <li class="lessons-list-elem lessons-list-elem_block">{{ lesson.title }}</li>
-                    {% endif %}
-                {% endfor %}
-            </ol>
+            {% for chapter in chapters %}
+            <div class="lessons-chapter">
+                <h2 class="lessons-chapter-title">{{ chapter.title }}</h2>
+                <ol class="lessons-list">
+                    {% for lesson in chapter.lessons %}
+                        {% if lesson.id in passed_lessons %}
+                            <li class="lessons-list-elem"><a href="{{ url_for('lesson', lesson_id=lesson.id) }}">{{ lesson.title }}</a>
+                            {% if lesson.id in its_next_lesson %}<input type="checkbox" disabled>
+                            {% else %} <input type="checkbox" checked disabled>
+                            {% endif %}</li>
+                        {% elif lesson.id in its_next_lesson %}
+                            <li class="lessons-list-elem"><a href="{{ url_for('lesson', lesson_id=lesson.id) }}">{{ lesson.title }}</a><input type="checkbox" disabled></li>
+
+                        {% else %}
+                            <li class="lessons-list-elem lessons-list-elem_block">{{ lesson.title }}</li>
+                        {% endif %}
+                    {% endfor %}
+                </ol>
+            </div>
+            {% endfor %}
         </div>
     {% else %}
         <div class="account-unlogged">

@@ -70,3 +70,52 @@ function editorSubmit(lesson_id, event) {
         document.getElementById('interactions-message').textContent = 'Произошла ошибка: ' + error.message;
     });
 };
+const testBtn = document.querySelector('.lesson-test-form-button');
+const nextLessonDiv = document.querySelector('.lesson-test-form-nextlesson');
+testBtn.addEventListener('click', (event)=>{
+    event.preventDefault()
+    const lesson_id = testBtn.id;
+    var form = document.querySelector('.lesson-test-form');
+    if (!form.checkValidity()) {
+        document.getElementById('test-message').textContent = 'Пожалуйста, выберите ответ.';
+        return;
+    }
+    const formData = new FormData(form);
+    
+    fetch(`/test_verify/${lesson_id}`, {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => {
+        console.log(response.status);
+        return response.json();
+    })
+    .then(data => {
+        if (data.response) {
+            document.getElementById('test-message').textContent = data.message;
+            nextLessonDiv.style.height = 'fit-content'
+        } else {
+            document.getElementById('test-message').textContent = data.message;
+        }
+    })
+    .catch(error => {
+        document.getElementById('test-message').textContent = 'Произошла ошибка: ' + error.message;
+    })
+})
+
+function deleteChapter(chapterId) {
+    if (confirm('Вы уверены, что хотите удалить эту главу?  Все связанные уроки также будут удалены!')) {
+        fetch(`/delete_chapter/${chapterId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.response) {
+                document.getElementById(`chapter-row-${chapterId}`).remove();
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => console.error('Ошибка:', error));
+    }
+}

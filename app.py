@@ -15,6 +15,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///siteBases.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
+class Chapter(db.Model):
+    __tablename__ = 'chapters'
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(100), nullable=False)
+    lessons = db.relationship('Lessons', backref='chapter', lazy=True) 
+
 class UsersDB(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
@@ -32,6 +38,7 @@ class Lessons(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(100), nullable=False)
     text = db.Column(db.Text, nullable=False)
+    chapter_id = db.Column(db.Integer, db.ForeignKey('chapters.id'), nullable=True)
     questions = db.relationship('Questions', backref='lesson', lazy=True)
     passed = db.relationship('UsersPassed', backref='lesson', lazy=True)
 
@@ -86,19 +93,25 @@ def index():
 def lessons():
     user_session = session.get('user_session')
     if user_session:
-        lessonsDB = Lessons.query.all()
+        chapters = Chapter.query.all()
         passed_lesson = UsersPassed.query.filter_by(user=session['user_session']).all()
         passed_lessons = set()
         for passed in passed_lesson:
             if passed.is_passed:
                 passed_lessons.add(passed.lesson_id)
         its_next_lesson = set()
-        for lesson in lessonsDB:
-            if lesson.id not in passed_lessons:
-                passed_lessons.add(lesson.id)
-                its_next_lesson.add(lesson.id)
-                break 
-        return render_template('lessons.html', active_page='lessons', lessons=lessonsDB,passed_lessons=passed_lessons, its_next_lesson=its_next_lesson)
+        if not passed_lessons and chapters:
+            first_chapter = chapters[0]
+            if first_chapter.lessons: 
+                first_lesson = sorted(first_chapter.lessons, key=lambda x: x.id)[0] 
+                its_next_lesson.add(first_lesson.id)
+        else:
+            for chapter in chapters:
+                chapter_lessons = sorted([lesson for lesson in chapter.lessons if lesson.id not in passed_lessons], key=lambda x: x.id)
+                if chapter_lessons:
+                    its_next_lesson.add(chapter_lessons[0].id)
+                    break 
+        return render_template('lessons.html', active_page='lessons', chapters=chapters, passed_lessons=passed_lessons, its_next_lesson=its_next_lesson)
     else:
         return render_template('lessons.html', active_page='lessons')
 
@@ -111,27 +124,37 @@ def lesson(lesson_id):
         for question in questions:
             question.answer_load = json.loads(question.answers)
             question.isCorrect_load = json.loads(question.isCorrect)
-
-        next_lesson = lesson_id+1
-        last_lesson = Lessons.query.order_by(Lessons.id.desc()).first()
-        if next_lesson>last_lesson.id:
-            next_lesson = False
-
-        lessonsDB = Lessons.query.all()
+        chapters = Chapter.query.all()
         passed_lesson = UsersPassed.query.filter_by(user=session['user_session']).all()
-        available_lessons = set()
-
+        passed_lessons = set()
         for passed in passed_lesson:
             if passed.is_passed:
-                available_lessons.add(passed.lesson_id)
-    
-        for lesson in lessonsDB:
-            if lesson.id not in available_lessons:
-                available_lessons.add(lesson.id)
-                break
+                passed_lessons.add(passed.lesson_id)
 
-        if lesson_id in available_lessons:
-            return render_template('lesson.html', lesson=current_lesson, questions=questions,active_page='lessons', next_lesson=next_lesson, available_lessons=available_lessons)
+        its_next_lesson = set() 
+        if not passed_lessons and chapters:
+            first_chapter = chapters[0]
+            if first_chapter.lessons:
+                first_lesson = sorted(first_chapter.lessons, key=lambda x: x.id)[0]
+                its_next_lesson.add(first_lesson.id)
+        else:
+            for chapter in chapters:
+                chapter_lessons = sorted([lesson for lesson in chapter.lessons if lesson.id not in passed_lessons], key=lambda x: x.id)
+                if chapter_lessons:
+                    its_next_lesson.add(chapter_lessons[0].id)
+                    break
+        if lesson_id in its_next_lesson or lesson_id in passed_lessons:
+            next_lesson_id = None 
+            for chapter in chapters:
+                chapter_lessons = sorted(chapter.lessons, key=lambda lesson: lesson.id)
+                for i, lesson in enumerate(chapter_lessons):
+                    if lesson.id == lesson_id:
+                        if i + 1 < len(chapter_lessons):
+                            next_lesson_id = chapter_lessons[i + 1].id
+                        break
+                if next_lesson_id:
+                    break
+            return render_template('lesson.html', lesson=current_lesson, questions=questions, active_page='lessons', next_lesson=next_lesson_id)
         else:
             return redirect(url_for('lessons'))
     else:
@@ -140,8 +163,9 @@ def lesson(lesson_id):
 @app.route('/lessoncreate', methods=['GET','POST'])
 @checkToken
 def lessonsadmin():
+    chapters = Chapter.query.all()  
     lessons = Lessons.query.all() 
-    return render_template('lessoncreate.html', lessons=lessons, active_page='lessons')
+    return render_template('lessoncreate.html', lessons=lessons, chapters=chapters, active_page='lessons')
 
 @app.route('/get_admin', methods=['GET','POST'])
 @checkToken
@@ -167,6 +191,7 @@ def createlesson():
         try:
             lesson_title = request.form['lesson-title']
             lesson_text = request.form['lesson-text']
+            chapter_id = request.form.get('chapter-select', type=int) 
             lesson_questions = request.form.get('lesson-questions', '')
             answer_texts = request.form.getlist('answer-text')
             is_correct = request.form.getlist('is-correct')
@@ -192,7 +217,7 @@ def createlesson():
                 lesson_text = lesson_text.replace(f"[img:{total}]", f"<img src='/static/uploads/{filename}'>")
                 total-=1
 
-            new_lesson = Lessons(title=lesson_title, text=lesson_text)
+            new_lesson = Lessons(title=lesson_title, text=lesson_text, chapter_id=chapter_id) 
             db.session.add(new_lesson)
             db.session.commit()
             answer_texts_json = json.dumps(answer_texts)
@@ -223,11 +248,12 @@ def deletelesson(lesson_id):
 def lessonedit(lesson_id):
     lesson = Lessons.query.get_or_404(lesson_id) 
     lessons = Lessons.query.all()
+    chapters = Chapter.query.all()
     questions = Questions.query.filter_by(lesson_id=lesson_id).all()
     for question in questions:
         question.answer_load = json.loads(question.answers)
         question.isCorrect_load = json.loads(question.isCorrect)
-    return render_template('lessonedit.html', active_page='lessons', lesson=lesson, question=questions, lessons=lessons)
+    return render_template('lessonedit.html', active_page='lessons', lesson=lesson, question=questions, lessons=lessons, chapters=chapters)
 
 @app.route('/edit_lesson/<int:lesson_id>', methods=['GET', 'POST'])
 @checkToken
@@ -241,6 +267,7 @@ def editlesson(lesson_id):
             lesson_questions = request.form['lesson-questions']
             answer_texts = request.form.getlist('answer-text')
             is_correct = request.form.getlist('is-correct')
+            chapter_id = request.form.get('chapter-select', type=int)
             images = request.files.getlist('lesson-images')
             image_paths = []
             if not lesson_questions or not answer_texts or not is_correct:
@@ -263,6 +290,7 @@ def editlesson(lesson_id):
 
             lesson.title = request.form['lesson-title']
             lesson.text = lesson_text
+            lesson.chapter_id = chapter_id
             db.session.commit()
 
             question = Questions.query.filter_by(lesson_id=lesson_id).first()
@@ -382,6 +410,33 @@ def logout():
     response = redirect(url_for('account'))
     response.delete_cookie(TOKEN_NAME) 
     return response
+
+@app.route('/create_chapter', methods=['POST'])
+@checkToken
+def create_chapter():
+    if request.method == 'POST':
+        chapter_title = request.form.get('chapter-title')
+        if not chapter_title:
+            return jsonify({'response': False, 'message': 'Название главы не может быть пустым'})
+        new_chapter = Chapter(title=chapter_title)
+        db.session.add(new_chapter)
+        db.session.commit()
+        return jsonify({'response': True, 'message': 'Глава успешно создана'})
+
+@app.route('/delete_chapter/<int:chapter_id>', methods=['DELETE'])
+@checkToken
+def delete_chapter(chapter_id):
+    chapter = Chapter.query.get(chapter_id)
+    if chapter:
+        for lesson in chapter.lessons:
+            Questions.query.filter_by(lesson_id=lesson.id).delete()
+            UsersPassed.query.filter_by(lesson_id=lesson.id).delete()
+        Lessons.query.filter_by(chapter_id=chapter_id).delete()
+        db.session.delete(chapter)
+        db.session.commit()
+        return jsonify({'response': True, 'message': 'Глава удалена'})
+    else:
+        return jsonify({'response': False, 'message': 'Глава не найдена'})
 
 with app.app_context():
     db.create_all()

@@ -2,9 +2,27 @@
 {% block main %}
 {% if session['user_status'] == 'admin' %}
 <div class="interactions">
+    <div class="interactions-create-chapter">
+            <h3 class="interactions-create-chapter-title">Создать главу</h3>
+            <div id="create-chapter-div">
+                <input type="text" name="chapter-title" id="chapter-title" placeholder="Название главы" required>
+                <button type="button" onclick="createChapter()">Создать</button>
+            </div>
+            <p id="chapter-message"></p>
+        </div>
     <form method="post" class="interactions-form" enctype="multipart/form-data">
         <h1 class="interactions-form-title">Создание нового урока</h1>
         <p class="interactions-form-message" id="interactions-message"></p>
+        <div class="interactions-form-group">
+            <label for="chapter-select" class="interactions-form-group-label">Глава:</label>
+            <select name="chapter-select" class="interactions-form-group-input">
+                <option value="">Без главы</option>
+                {% for chapter in chapters %}
+                    <option value="{{ chapter.id }}">{{ chapter.title }}</option>
+                {% endfor %}
+            </select>
+            <button type="button" onclick="toggleCreate()">Создать новую главу</button>
+        </div>
         <div class="interactions-form-group">
             <label for="lesson-title" class="interactions-form-group-label">Название урока:</label>
             <textarea name="lesson-title" class="interactions-form-group-input" required></textarea>  
@@ -51,14 +69,39 @@
                 <tr class="interactions-edit-table-str">
                     <td class="interactions-edit-table-str-title">id</td>
                     <td class="interactions-edit-table-str-title">Название</td>
+                    <td class="interactions-edit-table-str-title">Глава</td>  
                     <td class="interactions-edit-table-str-title" colspan="2">Изменения</td>
                 </tr>
             {% for lesson in lessons%}
                 <tr class="interactions-edit-table-str" id="interactions-edit-table-str{{lesson.id}}">
                     <td class="interactions-edit-table-str-id">{{ lesson.id }}</td>
                     <td class="interactions-edit-table-str-lesson">{{ lesson.title }}</td>
+                    <td class="interactions-edit-table-str-lesson">
+                        {% if lesson.chapter %}
+                            {{ lesson.chapter.title }}
+                        {% else %}
+                            Без главы
+                        {% endif %}
+                    </td>
                     <td class="interactions-edit-table-str-edit"><a href="{{url_for('lessonedit', lesson_id=lesson.id)}}"> <img src="../static/img/pencil-edit.svg" alt="" class="interactions-edit-pencil"></a></td>
                     <td class="interactions-edit-table-str-btn"><button onclick="deleteLesson('{{lesson.id}}')"><img src="../static/img/x-symbol.svg" alt="" class="interactions-edit-xsymbol"></button></td>
+                </tr>
+            {% endfor %}
+        </table>
+    </div>
+    <div class="interactions-edit-chapters">
+        <h3 class="interactions-edit-chapters-title">Управление главами</h3>
+        <table class="interactions-edit-table">
+            <tr class="interactions-edit-table-str">
+                <td class="interactions-edit-table-str-title">ID</td>
+                <td class="interactions-edit-table-str-title">Название</td>
+                <td class="interactions-edit-table-str-title">Удаление</td>
+            </tr>
+            {% for chapter in chapters %}
+                <tr class="interactions-edit-table-str" id="chapter-row-{{chapter.id}}">
+                    <td class="interactions-edit-table-str-id">{{ chapter.id }}</td>
+                    <td class="interactions-edit-table-str-lesson">{{ chapter.title }}</td>
+                    <td class="interactions-edit-table-str-btn"><button onclick="deleteChapter('{{chapter.id}}')"><img src="../static/img/x-symbol.svg" alt="" class="interactions-edit-xsymbol"></button></td>
                 </tr>
             {% endfor %}
         </table>

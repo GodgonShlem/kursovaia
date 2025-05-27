@@ -4,7 +4,7 @@
     margin: 60px auto;
     padding: 0 20px;
     .interactions-form {
-        .interactions-form-group:nth-of-type(2) .interactions-form-group-input {
+        .interactions-form-group:nth-of-type(3) .interactions-form-group-input {
             height: 550px; 
         }
         .interactions-form-title {
@@ -30,10 +30,18 @@
                 resize: none;
                 font-size: 22px;
                 padding: 10px 5px;
+                margin-bottom: 20px;
                 &:focus {
                     outline: none;
                 }
             }
+            button {
+            width: 200px;
+            font-size: 18px;
+            height: 40px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
         }
         .interactions-form-questions{
             .interactions-form-questions-elem{
@@ -83,41 +91,70 @@
             display: flex;
             align-items: center;
         }
-        .interactions-edit-xsymbol{
-            width: 14px;
-            margin: 0 5px;
-        }
         .interactions-edit-pencil{
             width: 28px;
             margin: 0 5px;
         }
-        .interactions-edit-table {
-            width: 100%;
-            border-collapse: collapse;
-            .interactions-edit-table-str {
-                .interactions-edit-table-str-title {
-                    font-weight: bold;
-	                padding: 5px;
-	                background: #efefef;
-	                border: 1px solid variables.$MainColorText;
-                }
-                td {
-                    border: 1px solid variables.$MainColorText;
-	                padding: 5px;
-                    &:nth-of-type(3), &:nth-of-type(4) {
-                        text-align: center;
-                    }
-                }
-                .interactions-edit-table-str-btn {
-                    button {
-                        width: 100%;
-                        height: 100%;
-                        border: none;
-                        background-color: variables.$MainBackground;
-                        cursor: pointer;
-                    }
-                }
+    }
+    .interactions-create-chapter {
+        display: none;
+        h3 {
+            font-size: 24px;
+        }
+        input {
+            padding: 8px;
+            font-size: 18px;
+            margin: 10px 0;
+            width: 500px;
+            resize: none;
+        }
+        button {
+            width: 200px;
+            font-size: 18px;
+            height: 40px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        p {
+            font-size: 20px;
+        }
+    }
+    .interactions-edit-chapters {
+        h3 {
+            font-size: 24px;
+        }
+    }
+}
+
+.interactions-edit-table {
+    width: 100%;
+    border-collapse: collapse;
+    .interactions-edit-table-str {
+        .interactions-edit-table-str-title {
+            font-weight: bold;
+            padding: 5px;
+            background: #efefef;
+            border: 1px solid variables.$MainColorText;
+        }
+        td {
+            border: 1px solid variables.$MainColorText;
+            padding: 5px;
+            &:nth-of-type(3), &:nth-of-type(4) {
+                text-align: center;
+            }
+        }
+        .interactions-edit-table-str-btn {
+            button {
+                width: 100%;
+                height: 100%;
+                border: none;
+                background-color: variables.$MainBackground;
+                cursor: pointer;
             }
         }
     }
+}
+.interactions-edit-xsymbol{
+    width: 14px;
+    margin: 0 5px;
 }

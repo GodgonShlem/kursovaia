@@ -100,3 +100,61 @@ function previewImages() {
         reader.readAsDataURL(file);
     }
 }
+let isToggleCreate = false;
+const createChapterToggle = document.querySelector('.interactions-create-chapter');
+function toggleCreate(){
+    console.log('gsdsdfg')
+    if (isToggleCreate) {
+        isToggleCreate = false;
+        createChapterToggle.style.display = 'none';
+    }
+    else {
+        isToggleCreate = true;
+        createChapterToggle.style.display = 'block';
+    }
+   
+}
+
+function createChapter() {
+    const chapterTitle = document.getElementById('chapter-title').value;
+    if (!chapterTitle) {
+        document.getElementById('chapter-message').textContent = 'Введите название главы.';
+        return;
+    }
+    const formData = new FormData();
+    formData.append('chapter-title', chapterTitle);
+    fetch('/create_chapter', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.response) {
+            document.getElementById('chapter-message').textContent = data.message;
+            document.getElementById('chapter-title').value = '';
+            location.reload();
+        } else {
+            document.getElementById('chapter-message').textContent = data.message;
+        }
+    })
+    .catch(error => {
+        document.getElementById('chapter-message').textContent = 'Ошибка: ' + error;
+    });
+}
+
+function deleteChapter(chapterId) {
+    if (confirm('Вы уверены, что хотите удалить эту главу?  Все связанные уроки также будут удалены!')) {
+        fetch(`/delete_chapter/${chapterId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.response) {
+                document.getElementById(`chapter-row-${chapterId}`).remove();
+            } else {
+                alert(data.message);
+            }
+        })
+        .catch(error => console.error('Ошибка:', error));
+    }
+}
