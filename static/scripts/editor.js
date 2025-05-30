@@ -62,46 +62,22 @@ function editorSubmit(lesson_id, event) {
     .then(data => {
         if (data.response) {
             document.getElementById('interactions-message').textContent = 'Урок успешно изменен';
+            document.getElementById('editor-btn-submit').classList.add('good-end'); 
+            setTimeout(() => {
+                document.getElementById('editor-btn-submit').classList.remove('good-end'); 
+            }, 1000);
         } else {
             document.getElementById('interactions-message').textContent = 'Урок не изменен! ' + data.message;
+            document.getElementById('editor-btn-submit').classList.add('bad-end'); 
+            setTimeout(() => {
+                document.getElementById('editor-btn-submit').classList.remove('bad-end'); 
+            }, 1000);
         }
     })
     .catch(error => {
         document.getElementById('interactions-message').textContent = 'Произошла ошибка: ' + error.message;
     });
 };
-const testBtn = document.querySelector('.lesson-test-form-button');
-const nextLessonDiv = document.querySelector('.lesson-test-form-nextlesson');
-testBtn.addEventListener('click', (event)=>{
-    event.preventDefault()
-    const lesson_id = testBtn.id;
-    var form = document.querySelector('.lesson-test-form');
-    if (!form.checkValidity()) {
-        document.getElementById('test-message').textContent = 'Пожалуйста, выберите ответ.';
-        return;
-    }
-    const formData = new FormData(form);
-    
-    fetch(`/test_verify/${lesson_id}`, {
-        method: 'POST',
-        body: formData
-    })
-    .then(response => {
-        console.log(response.status);
-        return response.json();
-    })
-    .then(data => {
-        if (data.response) {
-            document.getElementById('test-message').textContent = data.message;
-            nextLessonDiv.style.height = 'fit-content'
-        } else {
-            document.getElementById('test-message').textContent = data.message;
-        }
-    })
-    .catch(error => {
-        document.getElementById('test-message').textContent = 'Произошла ошибка: ' + error.message;
-    })
-})
 
 function deleteChapter(chapterId) {
     if (confirm('Вы уверены, что хотите удалить эту главу?  Все связанные уроки также будут удалены!')) {
@@ -118,4 +94,109 @@ function deleteChapter(chapterId) {
         })
         .catch(error => console.error('Ошибка:', error));
     }
+}
+
+function addAnswer(id){
+    let checkboxes = document.querySelectorAll(`input[name="is-correct[${id}]"]`);
+    let lastCheckboxValue = checkboxes.length > 0 ? checkboxes[checkboxes.length - 1].value : 0;
+    let newCheckbox = parseInt(lastCheckboxValue) + 1;
+    let answerOptions = document.getElementById(`answer-options-[${id}]`);
+    let newAnswerDiv = document.createElement('div');
+    newAnswerDiv.classList.add("interactions-form-questions-elem");
+    newAnswerDiv.innerHTML = `
+        <input type="checkbox" name="is-correct[${id}]" class="interactions-form-questions-elem-check" value="${newCheckbox}">
+        <textarea type="text" name="answer-text[${id}]" class="interactions-form-questions-elem-input" placeholder="Вариант ответа ${newCheckbox}"></textarea><br>
+    `;
+    answerOptions.appendChild(newAnswerDiv);
+}
+function removeAnswer(id) {
+    const answerOptions = document.getElementById(`answer-options-[${id}]`);
+    const lastAnswerDiv = answerOptions.lastElementChild;
+    if (lastAnswerDiv) {
+      answerOptions.removeChild(lastAnswerDiv);
+    }
+}
+
+function addQuestion(){
+    let questions = document.querySelectorAll('.question-title');
+    let lastQuestion = -1
+    questions.forEach(q => {lastQuestion+=1;});
+    let newQuestion = parseInt(lastQuestion) + 1;
+    const questionList = document.querySelector('.add-question');
+    const newQuestionDiv = document.createElement('div');
+    newQuestionDiv.classList.add('interactions-form-group-container');
+    const questionCount = document.getElementById('question-count');
+    questionCount.value = parseInt(questionCount.value) + 1;
+    newQuestionDiv.innerHTML = `
+        <label for="lesson-questions" class="interactions-form-group-label question-title">Вопрос:</label>
+                <textarea name="lesson-question[${newQuestion}]" class="interactions-form-group-input"></textarea>
+                <div class="interactions-form-questions">
+                    <p class="interactions-form-questions-title">Варианты ответов</p>
+                    <p class="interactions-form-questions-title">Поставьте галочку у верных ответов</p>
+                    <div class="interactions-form-questions-options" id="answer-options-[${newQuestion}]">
+                        <div class="interactions-form-questions-elem">
+                            <input type="checkbox" name="is-correct[${newQuestion}]" class="interactions-form-questions-elem-check" value="1">
+                            <textarea type="text" name="answer-text[${newQuestion}]" class="interactions-form-questions-elem-input" placeholder="Вариант ответа 1"></textarea><br>
+                        </div>
+                        <div class="interactions-form-questions-elem">
+                            <input type="checkbox" name="is-correct[${newQuestion}]" class="interactions-form-questions-elem-check" value="2">
+                            <textarea type="text" name="answer-text[${newQuestion}]" class="interactions-form-questions-elem-input" placeholder="Вариант ответа 2"></textarea><br>
+                        </div>
+                    </div>
+                    <button type="button" class="interactions-form-questions-btns" onclick="addAnswer(id=${newQuestion})">Добавить вариант</button>
+                    <button type="button" class="interactions-form-questions-btns" onclick="removeAnswer(id=${newQuestion})">Удалить вариант</button>
+                </div>
+    `;
+    questionList.appendChild(newQuestionDiv);
+}
+
+function removeQuestion() {
+const elements = document.querySelectorAll('.interactions-form-group-container');
+if (elements.length) {
+    const questionCount = document.getElementById('question-count');
+    questionCount.value = questionCount.value - 1;
+    const elementToRemove = elements[elements.length - 1];
+    elementToRemove.remove();
+    }
+}
+
+let isToggleCreate = false;
+const createChapterToggle = document.querySelector('.interactions-create-chapter');
+function toggleCreate(){
+    if (isToggleCreate) {
+        isToggleCreate = false;
+        createChapterToggle.style.maxHeight = '0';
+    }
+    else {
+        isToggleCreate = true;
+        createChapterToggle.style.maxHeight ='200px';
+    }
+   
+}
+
+function createChapter() {
+    const chapterTitle = document.getElementById('chapter-title').value;
+    if (!chapterTitle) {
+        document.getElementById('chapter-message').textContent = 'Введите название главы.';
+        return;
+    }
+    const formData = new FormData();
+    formData.append('chapter-title', chapterTitle);
+    fetch('/create_chapter', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.response) {
+            document.getElementById('chapter-message').textContent = data.message;
+            document.getElementById('chapter-title').value = '';
+            location.reload();
+        } else {
+            document.getElementById('chapter-message').textContent = data.message;
+        }
+    })
+    .catch(error => {
+        document.getElementById('chapter-message').textContent = 'Ошибка: ' + error;
+    });
 }

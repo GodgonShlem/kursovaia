@@ -5,42 +5,49 @@
             <a href="{{ url_for('lessons')}}" class="lesson-href"><img src="../static/img/arrow-right.svg" alt=""></a>
             <h2 class="lesson-title">{{ lesson.title }}</h2>
             <p class="lesson-text">{{ lesson.text| safe}}</p>
-            {% for question in questions %}
-            <div class="lesson-test">
-                <h3 class="lesson-test-question">{{ question.question }}</h3>
-                <p class="lesson-test-message" id= "test-message"></p>
-                {% if question.answer_load %}
-                    <form class="lesson-test-form" id="lesson-test">
-                        <ul class="lesson-test-form-ul">
-                        {% for answer in question.answer_load %}
-                            <li class="lesson-test-form-ul-li">
-                                <input type="checkbox" name="test-checkbox" value="{{ loop.index}}" class="lesson-test-form-ul-checkbox">
-                                <p class="lesson-test-form-ul-answer">{{ answer }}</p>
-                            </li>
-                        {% endfor %}
-                        </ul>
-                        <button type="button" class="lesson-test-form-button" id="{{lesson.id}}">Ответить</button>
-                        <div class="lesson-test-form-nextlesson">
-                            {% if next_lesson %}
-                                <div class="lesson-test-form-nextlesson-container">
-                                    <a href="{{ url_for('lessons')}}" class="lesson-href"><img src="../static/img/arrow-right.svg" alt=""></a>
-                                    <p class="lesson-test-form-nextlesson-title">К урокам</p>
-                                </div>
-                                <div class="lesson-test-form-nextlesson-container">
-                                    <p class="lesson-test-form-nextlesson-title">Перейти к следующему уроку</p>
-                                    <a href="{{ url_for('lesson', lesson_id=next_lesson)}}" class="lesson-test-form-nextlesson-btn"><img src="../static/img/arrow-right.svg" alt=""></a>
-                                    </div>
-                            {% else %}
-                                <div class="lesson-test-form-nextlesson-container">
-                                    <a href="{{ url_for('lessons')}}" class="lesson-href"><img src="../static/img/arrow-right.svg" alt=""></a>
-                                    <p class="lesson-test-form-nextlesson-title">К урокам</p>
-                                </div>
-                            {% endif %}
+            <button class="lesson-test-form-button test-show-btn" onclick="showTest()">Тест урока</button>
+            <form id="test-form">
+                {% for question in questions %}
+                <div class="lesson-test">
+                    <h3 class="lesson-test-question">{{ question.question }}</h3>
+                    <div class="question-result" id="question-result-{{ question.id }}" style="display: none;">
+                        <span class="result-text"></span>
+                    </div>
+                    <p class="lesson-test-message" id="test-message-{{ question.id }}"></p>
+                    {% if question.answer_load %}
+                        <div class="lesson-test-form" id="lesson-test-{{ question.id }}">
+                            <ul class="lesson-test-form-ul">
+                            {% for answer in question.answer_load %}
+                                <li class="lesson-test-form-ul-li">
+                                    <input type="checkbox" name="test-checkbox-{{ question.id }}" value="{{ loop.index }}" class="lesson-test-form-ul-checkbox">
+                                    <p class="lesson-test-form-ul-answer">{{ answer }}</p>
+                                </li>
+                            {% endfor %}
+                            </ul>
                         </div>
-                    </form>
+                    {% endif %}
+                </div>
+                {% endfor %}
+                <p id="general-message"></p>
+                <button type="submit" class="lesson-test-form-button test-submit-btn" id="{{ lesson.id }}">Ответить</button>
+            </form>
+            <div class="lesson-test-nextlesson">
+                {% if next_lesson %}
+                    <div class="lesson-test-nextlesson-container">
+                        <a href="{{ url_for('lessons')}}" class="lesson-href"><img src="../static/img/arrow-right.svg" alt=""></a>
+                        <p class="lesson-test-nextlesson-title">К урокам</p>
+                    </div>
+                    <div class="lesson-test-nextlesson-container">
+                        <p class="lesson-test-nextlesson-title">Перейти к следующему уроку</p>
+                        <a href="{{ url_for('lesson', lesson_id=next_lesson)}}" class="lesson-test-nextlesson-btn"><img src="../static/img/arrow-right.svg" alt=""></a>
+                        </div>
+                {% else %}
+                    <div class="lesson-test-nextlesson-container">
+                        <a href="{{ url_for('lessons')}}" class="lesson-href"><img src="../static/img/arrow-right.svg" alt=""></a>
+                        <p class="lesson-test-nextlesson-title">К урокам</p>
+                    </div>
                 {% endif %}
             </div>
-            {% endfor %}
         </div>
         <script src="../static/scripts/lesson.js"></script>
     {% else %}

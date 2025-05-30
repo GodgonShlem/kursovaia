@@ -25,7 +25,7 @@
             }
             .interactions-form-group-input {
                 border: 1px solid rgba(255, 255, 255, 0.2);
-                box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.197);
+                box-shadow: 1px 1px 5px 1px rgba(0, 0, 0, 0.197);
                 height: 60px;
                 resize: none;
                 font-size: 22px;
@@ -42,6 +42,12 @@
             border-radius: 5px;
             cursor: pointer;
         }
+        }
+        .interactions-form-group-container{
+            display: flex;
+            flex-direction: column;
+            order: -1;
+            margin-bottom: 20px;
         }
         .interactions-form-questions{
             .interactions-form-questions-elem{
@@ -81,6 +87,7 @@
                 height: 40px;
                 border-radius: 5px;
                 cursor: pointer;
+                transition: 0.3s ease;
             }
         }
     }
@@ -97,7 +104,9 @@
         }
     }
     .interactions-create-chapter {
-        display: none;
+        max-height: 0;
+        overflow: hidden;
+        transition: .3s ease;
         h3 {
             font-size: 24px;
         }

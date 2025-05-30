@@ -192,12 +192,6 @@ def createlesson():
             lesson_title = request.form['lesson-title']
             lesson_text = request.form['lesson-text']
             chapter_id = request.form.get('chapter-select', type=int) 
-            lesson_questions = request.form.get('lesson-questions', '')
-            answer_texts = request.form.getlist('answer-text')
-            is_correct = request.form.getlist('is-correct')
-
-            if not lesson_questions or not answer_texts or not is_correct:
-                return jsonify({'response': False, 'message': 'Необходимо добавить вопрос и ответы'})
             
             images = request.files.getlist('lesson-images')
             image_paths = []
@@ -220,15 +214,26 @@ def createlesson():
             new_lesson = Lessons(title=lesson_title, text=lesson_text, chapter_id=chapter_id) 
             db.session.add(new_lesson)
             db.session.commit()
-            answer_texts_json = json.dumps(answer_texts)
-            is_correct_json = json.dumps(is_correct)
-            new_question = Questions(question=lesson_questions, answers=answer_texts_json, isCorrect=is_correct_json, lesson_id=new_lesson.id)
-            db.session.add(new_question)
+            
+            question_count = int(request.form['question-count'])
+            for i in range(question_count):
+                lesson_questions = request.form.get(f'lesson-question[{i}]')
+                answer_texts = request.form.getlist(f'answer-text[{i}]')
+                is_correct = request.form.getlist(f'is-correct[{i}]')
+
+                if not lesson_questions or not answer_texts or not is_correct:
+                    return jsonify({'response': False, 'message': 'Необходимо добавить вопрос и ответы'})
+                
+                answer_texts_json = json.dumps(answer_texts)
+                is_correct_json = json.dumps(is_correct)
+                new_question = Questions(question=lesson_questions, answers=answer_texts_json, isCorrect=is_correct_json, lesson_id=new_lesson.id)
+                db.session.add(new_question)
+
             db.session.commit()
             return jsonify({'response': True})
         except Exception as err:
             db.session.rollback()
-            return jsonify({'error': str(err)})
+            return jsonify({'response': False, 'message': str(err)})
 
 @app.route('/delete_lesson/<int:lesson_id>', methods=['DELETE'])
 @checkToken
@@ -253,7 +258,7 @@ def lessonedit(lesson_id):
     for question in questions:
         question.answer_load = json.loads(question.answers)
         question.isCorrect_load = json.loads(question.isCorrect)
-    return render_template('lessonedit.html', active_page='lessons', lesson=lesson, question=questions, lessons=lessons, chapters=chapters)
+    return render_template('lessonedit.html', active_page='lessons', lesson=lesson, questions=questions, lessons=lessons, chapters=chapters)
 
 @app.route('/edit_lesson/<int:lesson_id>', methods=['GET', 'POST'])
 @checkToken
@@ -264,14 +269,9 @@ def editlesson(lesson_id):
             if not lesson:
                 return jsonify({'error': 'Урок не найден.'})
 
-            lesson_questions = request.form['lesson-questions']
-            answer_texts = request.form.getlist('answer-text')
-            is_correct = request.form.getlist('is-correct')
             chapter_id = request.form.get('chapter-select', type=int)
             images = request.files.getlist('lesson-images')
             image_paths = []
-            if not lesson_questions or not answer_texts or not is_correct:
-                return jsonify({'response': False, 'message': 'Необходимо добавить вопрос и ответы'})
             if not os.path.exists(UPLOAD_FOLDER):
                 os.makedirs(UPLOAD_FOLDER)
 
@@ -293,16 +293,29 @@ def editlesson(lesson_id):
             lesson.chapter_id = chapter_id
             db.session.commit()
 
-            question = Questions.query.filter_by(lesson_id=lesson_id).first()
-            question.question = lesson_questions
-            question.answers = json.dumps(answer_texts)
-            question.isCorrect = json.dumps(is_correct)
+            question_count = int(request.form['question-count'])
+            old_questions = Questions.query.filter_by(lesson_id=lesson_id).all()
+            for q in old_questions:
+                db.session.delete(q)
+            db.session.commit()
+            for i in range(question_count):
+                lesson_questions = request.form.get(f'lesson-question[{i}]')
+                answer_texts = request.form.getlist(f'answer-text[{i}]')
+                is_correct = request.form.getlist(f'is-correct[{i}]')
+
+                if not lesson_questions or not answer_texts or not is_correct:
+                    return jsonify({'response': False, 'message': 'Необходимо добавить вопрос и ответы'})
+                
+                answer_texts_json = json.dumps(answer_texts)
+                is_correct_json = json.dumps(is_correct)
+                new_question = Questions(question=lesson_questions, answers=answer_texts_json, isCorrect=is_correct_json, lesson_id=lesson_id)
+                db.session.add(new_question)
             db.session.commit()
             return jsonify({'response': True})
 
         except Exception as err:
             db.session.rollback()
-            return jsonify({'error': str(err)})
+            return jsonify({'response': False, 'message': str(err)})
 
 @app.route('/account', methods=['GET','POST'])
 @checkToken
@@ -375,26 +388,32 @@ def login():
 @checkToken
 def testverify(lesson_id):
     if request.method == 'POST':
-        user_answers = request.form.getlist('test-checkbox')
-        if len(user_answers) == 0:
-            return jsonify({'response': False, 'message': 'Выберите ответы'})
         questions = Questions.query.filter_by(lesson_id=lesson_id).all()
+        results = []
+        all_correct = True
         for question in questions:
-            question = json.loads(question.isCorrect)
-        if user_answers == question:
+            user_answers = request.form.getlist(f'test-checkbox-{question.id}')
+            correct_answers = json.loads(question.isCorrect)
+
+            is_correct = sorted(user_answers) == sorted(correct_answers)
+            results.append({'question_id': question.id,'is_correct': is_correct})
+            if not is_correct:
+                all_correct = False
+
+        if all_correct:
             try:
-                alreadyPassed = UsersPassed.query.filter_by(user=session['user_session'], lesson_id=lesson_id, is_passed = True).first()
+                alreadyPassed = UsersPassed.query.filter_by(user=session['user_session'], lesson_id=lesson_id, is_passed=True).first()
                 if alreadyPassed:
-                    return jsonify({'response': True, 'message': 'Всё верно'})
-                passed = UsersPassed(user=session['user_session'], lesson_id=lesson_id, is_passed = True)
+                    return jsonify({'response': True, 'message': 'Всё верно (урок уже был пройден)','results': results})
+                passed = UsersPassed(user=session['user_session'], lesson_id=lesson_id, is_passed=True)
                 db.session.add(passed)
                 db.session.commit()
-                return jsonify({'response': True, 'message': 'Всё верно, тест засчитан'})
+                return jsonify({'response': True, 'message': 'Всё верно, тест засчитан','results': results})
             except Exception as err:
                 db.session.rollback()
                 return jsonify({'error': str(err)})
         else:
-            return jsonify({'response': False, 'message': 'Неверно'})
+            return jsonify({'response': False, 'message': 'Есть ошибки','results': results}) 
 
 @app.route('/logout')
 @checkToken

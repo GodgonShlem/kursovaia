@@ -64,60 +64,73 @@
                     margin-right: 30px;
                 }
             }
-            .lesson-test-form-button {
-                margin: 20px 0;
-                width: 250px;
-                height: 45px;
-                font-size: 22px;
-                border: none;
-                border-radius: 5px;
-                background-color: variables.$MainColor;
-                &:hover {
-                    background-color: variables.$MainColorDarker;
-                }
+        }
+    }
+    .lesson-test-form-button {
+        margin: 20px 0;
+        width: 250px;
+        height: 45px;
+        font-size: 22px;
+        border: none;
+        border-radius: 5px;
+        background-color: variables.$MainColor;
+        &:hover {
+            background-color: variables.$MainColorDarker;
+        }
+    }
+    .lesson-test-nextlesson {
+        height: 0;
+        transition:  0.3s ease;
+        overflow: hidden;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        .lesson-test-nextlesson-container {
+            display: flex;
+            flex: 1;
+            align-items: center;
+            &:last-child{
+                justify-content: right;
             }
-            .lesson-test-form-nextlesson {
-                height: 0;
-                overflow: hidden;
-                display: flex;
-                align-items: center;
-                justify-content: space-between;
-                .lesson-test-form-nextlesson-container {
-                    display: flex;
-                    flex: 1;
-                    align-items: center;
-                    &:last-child{
-                        justify-content: right;
-                    }
-                }
-                .lesson-test-form-nextlesson-title {
-                    font-size: 22px;
-                    margin: 0 10px;
-                }
-                .lesson-test-form-nextlesson-btn {
-                    text-decoration: none;
-                    color: variables.$MainColorText;
-                    width: 80px;
-                    height: 40px;
-                    border-radius: 20px;
-                    background-color: variables.$MainColor;
-                    border: none;
-                    font-size: 40px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
-                    cursor: pointer;
-                    &:hover {
-                        background-color: variables.$MainColorDarker;
-                    }
-                    img {
-                        width: 32px;
-                    }
-                }
+        }
+        .lesson-test-nextlesson-title {
+            font-size: 22px;
+            margin: 0 10px;
+        }
+        .lesson-test-nextlesson-btn {
+            text-decoration: none;
+            color: variables.$MainColorText;
+            width: 80px;
+            height: 40px;
+            border-radius: 20px;
+            background-color: variables.$MainColor;
+            border: none;
+            font-size: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            &:hover {
+                background-color: variables.$MainColorDarker;
+            }
+            img {
+                width: 32px;
             }
         }
     }
 }
 .hidden {
     display: none;
+}
+#general-message {
+    transition:  0.3s ease;
+    font-size: 20px;
+    margin: 20px 0;
+    padding: 10px;
+    border-radius: 5px;
+}
+#test-form {
+    max-height: 0;
+    overflow: hidden;
+    transition:  0.3s ease;
 }

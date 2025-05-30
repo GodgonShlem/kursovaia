@@ -37,24 +37,31 @@
             <p class="interactions-form-group-description">Выберите несколько изображений.  В тексте используйте теги [img:1], [img:2] и т.д. для вставки.</p>
             <div id="image-preview" class="image-preview-container"></div>
         </div>
-        <div class="interactions-form-group">
-            <label for="lesson-questions" class="interactions-form-group-label">Вопрос урока:</label>
-            <textarea name="lesson-questions" class="interactions-form-group-input"></textarea>
-            <div class="interactions-form-questions">
-                <p class="interactions-form-questions-title">Варианты ответов</p>
-                <p class="interactions-form-questions-title">Поставьте галочку у верных ответов</p>
-                <div class="interactions-form-questions-options" id="answer-options">
-                    <div class="interactions-form-questions-elem">
-                        <input type="checkbox" name="is-correct" class="interactions-form-questions-elem-check" value="1">
-                        <textarea type="text" name="answer-text" class="interactions-form-questions-elem-input" placeholder="Вариант ответа 1"></textarea><br>
+        <div class="interactions-form-group add-question">
+            <div class="interactions-form-group-container">
+                <label for="lesson-questions" class="interactions-form-group-label question-title">Вопрос:</label>
+                <textarea name="lesson-question[0]" class="interactions-form-group-input"></textarea>
+                <div class="interactions-form-questions">
+                    <p class="interactions-form-questions-title">Варианты ответов</p>
+                    <p class="interactions-form-questions-title">Поставьте галочку у верных ответов</p>
+                    <div class="interactions-form-questions-options" id="answer-options-[0]">
+                        <div class="interactions-form-questions-elem">
+                            <input type="checkbox" name="is-correct[0]" class="interactions-form-questions-elem-check" value="1">
+                            <textarea type="text" name="answer-text[0]" class="interactions-form-questions-elem-input" placeholder="Вариант ответа 1"></textarea><br>
+                        </div>
+                        <div class="interactions-form-questions-elem">
+                            <input type="checkbox" name="is-correct[0]" class="interactions-form-questions-elem-check" value="2">
+                            <textarea type="text" name="answer-text[0]" class="interactions-form-questions-elem-input" placeholder="Вариант ответа 2"></textarea><br>
+                        </div>
                     </div>
-                    <div class="interactions-form-questions-elem">
-                        <input type="checkbox" name="is-correct" class="interactions-form-questions-elem-check" value="2">
-                        <textarea type="text" name="answer-text" class="interactions-form-questions-elem-input" placeholder="Вариант ответа 2"></textarea><br>
-                    </div>
+                    <button type="button" class="interactions-form-questions-btns" onclick="addAnswer(0)">Добавить вариант</button>
+                    <button type="button" class="interactions-form-questions-btns" onclick="removeAnswer(0)">Удалить вариант</button>
                 </div>
-                <button type="button" class="interactions-form-questions-btns" onclick="addAnswer()">Добавить вариант</button>
-                <button type="button" class="interactions-form-questions-btns" onclick="removeAnswer()">Удалить вариант</button>
+            </div>
+            <input type="number" name="question-count" id="question-count" value="1" class="hidden">
+            <div class="interactions-form-questions-btns-container">
+                <button type="button" class="interactions-form-questions-btns" onclick="addQuestion()">Добавить вопрос</button>
+                <button type="button" class="interactions-form-questions-btns" onclick="removeQuestion()">Удалить вопрос</button>
             </div>
         </div>
         <div class="interactions-form-group-btns">

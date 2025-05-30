@@ -2,6 +2,14 @@
 {% block main %}
 {% if session['user_status'] == 'admin' %}
     <div class="interactions">
+        <div class="interactions-create-chapter">
+            <h3 class="interactions-create-chapter-title">Создать главу</h3>
+            <div id="create-chapter-div">
+                <input type="text" name="chapter-title" id="chapter-title" placeholder="Название главы" required>
+                <button type="button" onclick="createChapter()">Создать</button>
+            </div>
+            <p id="chapter-message"></p>
+        </div>
         <form method="post" class="interactions-form" enctype="multipart/form-data">
             <h1 class="interactions-form-title">Редактирование урока</h1>
             <p class="interactions-form-message" id="interactions-message"></p>
@@ -13,6 +21,7 @@
                         <option value="{{ chapter.id }}" {% if lesson.chapter_id == chapter.id %}selected{% endif %}>{{ chapter.title }}</option>
                     {% endfor %}
                 </select>
+                <button type="button" onclick="toggleCreate()">Создать новую главу</button>
             </div>
             <div class="interactions-form-group">
                 <label for="lesson-title" class="interactions-form-group-label">Название урока:</label>
@@ -28,26 +37,35 @@
                 <p class="interactions-form-group-description">Выберите несколько изображений.  В тексте используйте теги [img:1], [img:2] и т.д. для вставки.</p>
                 <div id="image-preview" class="image-preview-container"></div>
             </div>
-            <div class="interactions-form-group">
-                <label for="lesson-questions" class="interactions-form-group-label">Вопрос урока:</label>
-                <textarea name="lesson-questions" class="interactions-form-group-input">{% for question in question %}{{ question.question }}{% endfor %}</textarea>
-                <div class="interactions-form-questions">
-                    <p class="interactions-form-questions-title">Варианты ответов</p>
-                    <p class="interactions-form-questions-title">Поставьте галочку у верных ответов</p>
-                    <div class="interactions-form-questions-options" id="answer-options">
-                        {% for question in question %}
+            
+            <div class="interactions-form-group add-question">
+                {% for question in questions %}
+                <div class="interactions-form-group-container">
+                    <label for="lesson-questions" class="interactions-form-group-label question-title">Вопрос:</label>
+                    <textarea name="lesson-question[{{ loop.index0 }}]" class="interactions-form-group-input">{{ question.question }}</textarea>
+                    <div class="interactions-form-questions">
+                        <p class="interactions-form-questions-title">Варианты ответов</p>
+                        <p class="interactions-form-questions-title">Поставьте галочку у верных ответов</p>
+                        <div class="interactions-form-questions-options" id="answer-options-[{{ loop.index0 }}]">
+                            {% set indexForLoop = loop.index0 %}
                             {% for answer in question.answer_load %}
                             <div class="interactions-form-questions-elem">
-                                <input type="checkbox" name="is-correct" class="interactions-form-questions-elem-check" value="{{  loop.index|string }}" {% if loop.index|string in question.isCorrect_load %}checked{% endif %}>
-                                <textarea type="text" name="answer-text" class="interactions-form-questions-elem-input" value="{{ answer }}">{{ answer }}</textarea><br>
+                                <input type="checkbox" name="is-correct[{{indexForLoop}}]" class="interactions-form-questions-elem-check" value="{{loop.index}}"{% if loop.index|string in question.isCorrect_load %}checked{% endif %}>
+                                <textarea name="answer-text[{{indexForLoop}}]" class="interactions-form-questions-elem-input">{{ answer }}</textarea>
                             </div>
                             {% endfor %}
-                        {% endfor %}
+                        </div>
+                        <button type="button" class="interactions-form-questions-btns" onclick="addAnswer('{{ loop.index0 }}')">Добавить вариант</button>
+                        <button type="button" class="interactions-form-questions-btns" onclick="removeAnswer('{{ loop.index0 }}')">Удалить вариант</button>
                     </div>
-                    <button type="button" id="add-answer" onclick="addAnswer()">Добавить вариант</button>
-                    <button type="button" onclick="removeAnswer()">Удалить вариант</button>
+                </div>
+                {% endfor %}
+                <div class="interactions-form-questions-btns-container">
+                    <button type="button" class="interactions-form-questions-btns" onclick="addQuestion()">Добавить вопрос</button>
+                    <button type="button" class="interactions-form-questions-btns" onclick="removeQuestion()">Удалить вопрос</button>
                 </div>
             </div>
+            <input type="number" name="question-count" id="question-count" value="{{ questions|length }}" class="hidden">
             <div class="interactions-form-group-btns">
                 <button type="submit" class="interactions-form-group-btns-btn" id="editor-btn-submit" onclick="editorSubmit('{{lesson.id}}', event)">Сохранить</button>
             </div>

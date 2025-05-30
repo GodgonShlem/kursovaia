@@ -163,6 +163,14 @@ html {
   display: none;
 }
 
+.good-end {
+  background-color: rgba(80, 151, 80, 0.5) !important;
+}
+
+.bad-end {
+  background-color: rgba(151, 80, 80, 0.5) !important;
+}
+
 .accountmenu-logged {
   width: 800px;
   margin: 50px auto;
@@ -355,7 +363,7 @@ html {
 }
 .interactions .interactions-form .interactions-form-group .interactions-form-group-input {
   border: 1px solid rgba(255, 255, 255, 0.2);
-  box-shadow: 1px 1px 1px 1px rgba(0, 0, 0, 0.197);
+  box-shadow: 1px 1px 5px 1px rgba(0, 0, 0, 0.197);
   height: 60px;
   resize: none;
   font-size: 22px;
@@ -371,6 +379,12 @@ html {
   height: 40px;
   border-radius: 5px;
   cursor: pointer;
+}
+.interactions .interactions-form .interactions-form-group-container {
+  display: flex;
+  flex-direction: column;
+  order: -1;
+  margin-bottom: 20px;
 }
 .interactions .interactions-form .interactions-form-questions .interactions-form-questions-elem {
   display: flex;
@@ -409,6 +423,7 @@ html {
   height: 40px;
   border-radius: 5px;
   cursor: pointer;
+  transition: 0.3s ease;
 }
 .interactions .interactions-edit {
   border-top: 1px solid black;
@@ -423,7 +438,9 @@ html {
   margin: 0 5px;
 }
 .interactions .interactions-create-chapter {
-  display: none;
+  max-height: 0;
+  overflow: hidden;
+  transition: 0.3s ease;
 }
 .interactions .interactions-create-chapter h3 {
   font-size: 24px;
@@ -622,7 +639,7 @@ html {
   height: 30px;
   margin-right: 30px;
 }
-.lesson .lesson-test .lesson-test-form .lesson-test-form-button {
+.lesson .lesson-test-form-button {
   margin: 20px 0;
   width: 250px;
   height: 45px;
@@ -631,29 +648,30 @@ html {
   border-radius: 5px;
   background-color: #e6daa6;
 }
-.lesson .lesson-test .lesson-test-form .lesson-test-form-button:hover {
+.lesson .lesson-test-form-button:hover {
   background-color: #d3c99a;
 }
-.lesson .lesson-test .lesson-test-form .lesson-test-form-nextlesson {
+.lesson .lesson-test-nextlesson {
   height: 0;
+  transition: 0.3s ease;
   overflow: hidden;
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-.lesson .lesson-test .lesson-test-form .lesson-test-form-nextlesson .lesson-test-form-nextlesson-container {
+.lesson .lesson-test-nextlesson .lesson-test-nextlesson-container {
   display: flex;
   flex: 1;
   align-items: center;
 }
-.lesson .lesson-test .lesson-test-form .lesson-test-form-nextlesson .lesson-test-form-nextlesson-container:last-child {
+.lesson .lesson-test-nextlesson .lesson-test-nextlesson-container:last-child {
   justify-content: right;
 }
-.lesson .lesson-test .lesson-test-form .lesson-test-form-nextlesson .lesson-test-form-nextlesson-title {
+.lesson .lesson-test-nextlesson .lesson-test-nextlesson-title {
   font-size: 22px;
   margin: 0 10px;
 }
-.lesson .lesson-test .lesson-test-form .lesson-test-form-nextlesson .lesson-test-form-nextlesson-btn {
+.lesson .lesson-test-nextlesson .lesson-test-nextlesson-btn {
   text-decoration: none;
   color: black;
   width: 80px;
@@ -667,13 +685,27 @@ html {
   justify-content: center;
   cursor: pointer;
 }
-.lesson .lesson-test .lesson-test-form .lesson-test-form-nextlesson .lesson-test-form-nextlesson-btn:hover {
+.lesson .lesson-test-nextlesson .lesson-test-nextlesson-btn:hover {
   background-color: #d3c99a;
 }
-.lesson .lesson-test .lesson-test-form .lesson-test-form-nextlesson .lesson-test-form-nextlesson-btn img {
+.lesson .lesson-test-nextlesson .lesson-test-nextlesson-btn img {
   width: 32px;
 }
 
 .hidden {
   display: none;
+}
+
+#general-message {
+  transition: 0.3s ease;
+  font-size: 20px;
+  margin: 20px 0;
+  padding: 10px;
+  border-radius: 5px;
+}
+
+#test-form {
+  max-height: 0;
+  overflow: hidden;
+  transition: 0.3s ease;
 }
