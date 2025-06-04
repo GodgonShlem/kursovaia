@@ -50,6 +50,17 @@
         margin-bottom: 10px;
     }
 }
+@media (max-width: 768px) { 
+    .benefit-container-elem {
+        flex-wrap: wrap;
+    }
+    .benefit {
+        margin: 0 auto;
+        max-width: 170px;
+        padding: 5px;
+        font-size: 16px;
+    }
+}
 .call-to-action-div {
     padding: 80px 20px;
     text-align: center;

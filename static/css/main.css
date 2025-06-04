@@ -16,17 +16,22 @@ html {
 }
 .header .header-nav {
   display: flex;
+  flex-wrap: wrap;
   background-color: #e6daa6;
   border-radius: 40px;
   max-width: 1800px;
   margin: 20px auto;
   position: relative;
+  justify-content: space-between;
+  align-items: center;
 }
 .header .header-nav .header-nav-company {
   z-index: 1;
   display: flex;
   align-items: center;
-  margin-left: 50px;
+  margin-left: 20px;
+  padding: 10px;
+  box-sizing: border-box;
 }
 .header .header-nav .header-nav-company img {
   width: 34px;
@@ -38,13 +43,14 @@ html {
 }
 .header .header-nav .header-nav-pages {
   z-index: 1;
-  width: 100%;
   display: flex;
-  justify-content: right;
-  margin-right: 167px;
+  justify-content: center;
   align-items: center;
-  gap: 45px;
+  gap: 20px;
   border-radius: 20px;
+  flex-wrap: wrap;
+  padding: 10px;
+  box-sizing: border-box;
 }
 .header .header-nav .header-nav-pages .header-nav-pages-elem {
   font-size: 20px;
@@ -64,8 +70,10 @@ html {
 .header .header-nav .header-nav-account {
   display: flex;
   align-items: center;
-  margin-right: 50px;
+  margin-right: 20px;
   z-index: 2;
+  padding: 10px;
+  box-sizing: border-box;
 }
 .header .header-nav .header-nav-account img {
   width: 28px;
@@ -80,6 +88,26 @@ html {
   background-color: rgb(250, 250, 250);
 }
 
+@media (max-width: 768px) {
+  .header-nav {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .header-nav .header-nav-company,
+  .header-nav .header-nav-pages,
+  .header-nav .header-nav-account {
+    margin: 10px 0;
+    padding: 10px;
+    justify-content: center;
+  }
+  .header-nav .header-nav-company {
+    margin-left: 0 !important;
+  }
+  .header-nav .header-nav-pages {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+}
 .footer {
   max-width: 1200px;
   color: black;
@@ -95,6 +123,7 @@ html {
 .footer .footer-section {
   width: 100%;
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-around;
   border-radius: 0 0 50px 50px;
   border-top: 1px solid black;
@@ -172,12 +201,13 @@ html {
 }
 
 .accountmenu-logged {
-  width: 800px;
+  max-width: 700px;
+  width: 90%;
   margin: 50px auto;
   height: 350px;
   display: flex;
   flex-direction: column;
-  padding: 20px 30px;
+  padding: 10px;
   background-color: #e6daa6;
   border-radius: 30px;
   position: relative;
@@ -190,7 +220,8 @@ html {
 }
 
 .accountmenu-unlogged {
-  width: 400px;
+  max-width: 700px;
+  width: 90%;
   margin: 50px auto;
   height: 550px;
   display: flex;
@@ -216,7 +247,8 @@ html {
   cursor: pointer;
 }
 .accountmenu-unlogged .accountmenu-unlogged-form {
-  width: 300px;
+  max-width: 350px;
+  width: 95%;
   margin-bottom: 50px;
 }
 .accountmenu-unlogged .accountmenu-unlogged-form .accountmenu-unlogged-form-title {
@@ -295,6 +327,17 @@ html {
   margin-bottom: 10px;
 }
 
+@media (max-width: 768px) {
+  .benefit-container-elem {
+    flex-wrap: wrap;
+  }
+  .benefit {
+    margin: 0 auto;
+    max-width: 170px;
+    padding: 5px;
+    font-size: 16px;
+  }
+}
 .call-to-action-div {
   padding: 80px 20px;
   text-align: center;
@@ -497,7 +540,8 @@ html {
 }
 
 .lessons {
-  width: 700px;
+  max-width: 750px;
+  width: 95%;
   margin: 50px auto;
 }
 .lessons .lessons-link {
@@ -544,7 +588,8 @@ html {
   position: relative;
 }
 .account-unlogged .account-unlogged-message {
-  width: 375px;
+  max-width: 400px;
+  width: 95%;
   height: 150px;
   position: absolute;
   top: 50%;
@@ -572,9 +617,17 @@ html {
   border-bottom: 1px solid rgba(0, 0, 0, 0.5);
 }
 .account-unlogged .account-unlogged-lessons {
+  max-width: 750px;
+  width: 95%;
   filter: blur(5px);
 }
 
+@media (max-width: 900px) {
+  .account-unlogged-lessons {
+    max-height: 600px;
+    overflow: hidden;
+  }
+}
 .lesson {
   max-width: 1200px;
   margin: 50px auto;

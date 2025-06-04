@@ -1,0 +1,2 @@
+PassengerEnabled On
+PassengerPython /home/f/fediaz0y/fediaz0y.beget.tech/venv/bin/python

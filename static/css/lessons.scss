@@ -1,6 +1,7 @@
 @use 'variables';
 .lessons {
-    width: 700px;
+    max-width: 750px;
+    width: 95%;
     margin: 50px auto;
     .lessons-link {
         text-decoration: none;
@@ -46,7 +47,8 @@
 .account-unlogged {
     position: relative;
     .account-unlogged-message {
-        width: 375px;
+        max-width: 400px;
+        width: 95%;
         height: 150px;
         position: absolute;
         top: 50%;
@@ -74,6 +76,14 @@
         }
     }
     .account-unlogged-lessons {
+        max-width: 750px;
+        width: 95%;
         filter: blur(5px);
     }
+}
+@media (max-width: 900px) { 
+    .account-unlogged-lessons{
+    max-height: 600px;
+    overflow: hidden;
+        }
 }

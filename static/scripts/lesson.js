@@ -35,7 +35,7 @@ testBtn.addEventListener('click', (event)=>{
             generalMessage.textContent = data.message;
             generalMessage.style.backgroundColor = '#d4edda';
             generalMessage.style.color = '#155724';
-            nextLessonDiv.style.height = '50px';
+            nextLessonDiv.style.height = '100px';
         } else {
             generalMessage.textContent = data.message;
             generalMessage.style.backgroundColor = '#f8d7da';
@@ -60,6 +60,6 @@ function showTest() {
         testForm.style.maxHeight = '0';
     } else {
         isTestShow = true;
-        testForm.style.maxHeight = '5000px';
+        testForm.style.maxHeight = '10000px';
     }
 }
